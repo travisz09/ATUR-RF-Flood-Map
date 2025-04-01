@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Travis Zalesky">
+<meta name="dcterms.date" content="2025-03-31">
+<meta name="keywords" content="Arizona, Flood, Federal Emergency Management Administration, Random Forest, Machine Learning">
+
+<title>Arizona Random Forest Flood Mapping</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./appendix.html" rel="next">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Arizona Random Forest Flood Mapping</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Arizona Random Forest Flood Mapping</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Arizona Random Forest Flood Mapping</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Pair Wise Regressions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background"><span class="header-section-number">0.1</span> Background</a></li>
+  <li><a href="#sec-data-methods" id="toc-sec-data-methods" class="nav-link" data-scroll-target="#sec-data-methods"><span class="header-section-number">0.2</span> Data &amp; Methods</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">0.3</span> Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix"><span class="header-section-number">0.4</span> Appendix</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Arizona Random Forest Flood Mapping</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Travis Zalesky <a href="mailto:travisz@arizona.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0009-0006-0181-3099" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Arizona
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 31, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="block-title">Abstract</div>
+    <p>Federal Emergency Management Administration 100-year flood risk maps are expanded across the state of Arizona using a random forest, machine learning classification utilizing eight topographic explanatory variables.</p>
+  </div>
+</div>
+
+<div>
+  <div class="keywords">
+    <div class="block-title">Keywords</div>
+    <p>Arizona, Flood, Federal Emergency Management Administration, Random Forest, Machine Learning</p>
+  </div>
+</div>
+
+</header>
+
+
+<section id="background" class="level3" data-number="0.1">
+<h3 data-number="0.1" class="anchored" data-anchor-id="background"><span class="header-section-number">0.1</span> Background</h3>
+<p>A critical component of the Arizona Department of Water Resources (ADWR) Tri-University Recharge Project (TURP, a.k.a ATUR) is a state wide assessment of flooding potential. Initial efforts focused on a traditional suitability analysis approach, using the analytical hierarchy process (AHP) for multi-criterion decision making, largely based on the work by <span class="citation" data-cites="Aloui_Zghibi_Mazzoni_Elomri_Al-Ansari_2024">Aloui et al. (<a href="index.html#ref-Aloui_Zghibi_Mazzoni_Elomri_Al-Ansari_2024" role="doc-biblioref">2024</a>)</span>. These methods saw initial success, and are continuing to be developed and refined. However, it became apparent that there were a number of shortcomings inherent in this analysis which are not easily addressed.</p>
+<p>Firstly, the results of such an analysis are intrinsically linked to the data layers used, and the weighting schema determined by the AHP. As additional data sets became available, and alternate weighting schemas were tested we generated multiple versions of mapped flood potential which did not necessarily agree with each other. In the absence of high quality ground-truthed data it was difficult to validate these results and it was not clear to the project team which version was the best. This underscores the need for expert involvement at every stage in these AHP based analysis. While there is a wealth of hydrological expertise within the larger ATUR project, method development and implementation has largely been conducted by a GIS technician with marginal hydrologic knowledge, and it has been difficult to foster sustained buy-in from team members on this portion of the project.</p>
+<p>Furthermore, it was extremely difficult to develop a single generalized model that would be effective across the whole state. Because of the wide array of ecological and geologic conditions that are present across the state variables that are important for flood risk in one region may not apply in other regions. Lastly, even if these technical issues could be overcome, there was still gaps in the input data layers, resulting in unclassified regions.</p>
+<p>While the traditional suitability analysis methods of assessing flood potential is still valuable to the project, and will be retained and developed further, the reality of these challenges lead us to reevaluate our overall approach and consider alternate methods. Work by <span class="citation" data-cites="Mudashiru_Sabtu_Abustan_Balogun_2021">Mudashiru et al. (<a href="index.html#ref-Mudashiru_Sabtu_Abustan_Balogun_2021" role="doc-biblioref">2021</a>)</span> summarized the various methods used by other researchers in this field, which includes AHP based methods as well as physical modeling and machine learning applications. The machine learning methods utilized by <span class="citation" data-cites="Tehrany_Jones_Shabani_2019">Tehrany et al. (<a href="index.html#ref-Tehrany_Jones_Shabani_2019" role="doc-biblioref">2019</a>)</span> appeared to be particularly relevant and applicable. In particular, their use of topographic data <strong>only</strong> was particularly intriguing. These data sets are fully calculable from a digital elevation model (DEM), which are readily available, easily accessible, and have full coverage over the study area. These findings lead to a renewed initiative to apply a machine learning based method towards the objective of a state wide flooding potential map.</p>
+</section>
+<section id="sec-data-methods" class="level3" data-number="0.2">
+<h3 data-number="0.2" class="anchored" data-anchor-id="sec-data-methods"><span class="header-section-number">0.2</span> Data &amp; Methods</h3>
+<p>All explanatory variables for the model were derived from the NASA Shuttle Radar Topography Mission (SRTM) 30-m DEM. Slope, aspect, curvature, stream power index (SPI), topographic wetness index (TWI), and sediment transport index (STI) were all calculated in ArcGIS Pro (3.4.3). Slope, aspect and curvature were calculated using the Surface Parameters tool (Spatial Analyst). SPI, TWI, and STI were calculated as per <span class="citation" data-cites="Tehrany_Jones_Shabani_2019">Tehrany et al. (<a href="index.html#ref-Tehrany_Jones_Shabani_2019" role="doc-biblioref">2019</a>)</span> using the Raster Calculator according to Equations <a href="#eq-spi" class="quarto-xref"><span>1</span></a>-<a href="#eq-sti" class="quarto-xref"><span>3</span></a></p>
+<p><span id="eq-spi"><span class="math display">\[
+SPI = A_s * tan(ß)
+\tag{1}\]</span></span></p>
+<p><span id="eq-twi"><span class="math display">\[
+TWI = ln(A_s / tan(ß))
+\tag{2}\]</span></span></p>
+<p><span id="eq-sti"><span class="math display">\[
+STI = (A_s / 22.13)^{0.6} * (sin(ß)/0.0896)^{1.3}
+\tag{3}\]</span></span></p>
+<p>where A<sub>s</sub> is catchment area (m) and ß is slope (radians).</p>
+<p>Similarly, Topographic Roughness Index (TRI) was calculated as per <span class="citation" data-cites="Tehrany_Jones_Shabani_2019">Tehrany et al. (<a href="index.html#ref-Tehrany_Jones_Shabani_2019" role="doc-biblioref">2019</a>)</span> using a custom R (4.4.1) function with the package terra (1.7-78) according to <a href="#eq-tri" class="quarto-xref">Equation&nbsp;<span>4</span></a></p>
+<p><span id="eq-tri"><span class="math display">\[
+TRI = \left[ \sum (χ_{ij} - χ_{00})^2 \right] ^{0.5}
+\tag{4}\]</span></span></p>
+<p>where χ<sub>ij</sub> is the elevation at coordinates (i, j) and χ<sub>00</sub> is the elevation at coordinates (0, 0) for a 3x3 focal neighborhood. The code used to calculate TRI is available on <a href="https://github.com/travisz09/TopographicRoughnessIndex">GitHub</a>.</p>
+<p>Flood data used for training the model was obtained from the Federal Emergency Management Administration (FEMA) National Flood Hazards Layer, which provides 100-year flood maps for many areas of the US. The data was manually downloaded for each county in AZ from the FEMA <a href="https://hazards-fema.maps.arcgis.com/apps/webappviewer/index.html?id=8b0adb51996444d4879338b5529aa9cd">data viewer</a> (accessed 3/15/2025). Data layers were merged in ArcGIS Pro (3.4.3), and the vector data was converted to a raster with a 10 m resolution. Additionally, the FEMA data was reclassified to a binary output, either flooded or not flooded (during a 100-year flood event), eliminating details such as survey methods and flow depth.</p>
+<p>The machine learning model was performed in Google Earth Engine (GEE). The SRTM elevation data was access and clipped to the study area natively through GEE servers, all other data layers, including the study area shapefile, were uploaded as an asset to GEE prior to model implementation.</p>
+<p>Prior to modeling, the collinearity of the explanatory variables was explored using a series of pair-wise linear regression plots shown in <span class="quarto-unresolved-ref">?sec-appendix</span> Figures <a href="#fig-floodElev" class="quarto-xref"><span>2</span></a>-<a href="#fig-triSti" class="quarto-xref"><span>37</span></a>. For collinearity analysis 5,000 points were randomly sampled across the study area, the maximum number of points which can be plotted in GEE. The collinearity of each pair-wise regression is summarized visually in <a href="#fig-Rsquared" class="quarto-xref">Figure&nbsp;<span>1</span></a> using the R-squared statistic of each comparison.</p>
+<div id="fig-Rsquared" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-Rsquared-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/CorrelationMatrix.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-Rsquared-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Color coded R-squared statistic for each pair-wise linear regression (green = high, red = low), representing the collinearity of each variable used for modeling.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="conclusion" class="level3" data-number="0.3">
+<h3 data-number="0.3" class="anchored" data-anchor-id="conclusion"><span class="header-section-number">0.3</span> Conclusion</h3>
+</section>
+<section id="references" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="references">References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-Aloui_Zghibi_Mazzoni_Elomri_Al-Ansari_2024" class="csl-entry" role="listitem">
+Aloui, S., Zghibi, A., Mazzoni, A., Elomri, A., &amp; Al-Ansari, T.
+(2024). <em>Identifying suitable zones for integrated aquifer recharge
+and flood control in arid qatar using GIS-based multi-criteria
+decision-making</em>. <em>25</em>, 101137. <a href="https://doi.org/10.1016/j.gsd.2024.101137">https://doi.org/10.1016/j.gsd.2024.101137</a>
+</div>
+<div id="ref-Mudashiru_Sabtu_Abustan_Balogun_2021" class="csl-entry" role="listitem">
+Mudashiru, R. B., Sabtu, N., Abustan, I., &amp; Balogun, W. (2021).
+Flood hazard mapping methods: A review. <em>Journal of Hydrology</em>,
+<em>603</em>, 126846. <a href="https://doi.org/10.1016/j.jhydrol.2021.126846">https://doi.org/10.1016/j.jhydrol.2021.126846</a>
+</div>
+<div id="ref-Tehrany_Jones_Shabani_2019" class="csl-entry" role="listitem">
+Tehrany, M. S., Jones, S., &amp; Shabani, F. (2019). Identifying the
+essential flood conditioning factors for flood prone area mapping using
+machine learning techniques. <em>CATENA</em>, <em>175</em>, 174–192. <a href="https://doi.org/10.1016/j.catena.2018.12.011">https://doi.org/10.1016/j.catena.2018.12.011</a>
+</div>
+</div>
+</section>
+<section id="appendix" class="level3 appendix" data-number="0.4">
+<h3 class="appendix anchored" data-number="0.4" data-anchor-id="appendix"><span class="header-section-number">0.4</span> Appendix</h3>
+<section id="flooding" class="level4" data-number="0.4.1">
+<h4 data-number="0.4.1" class="anchored" data-anchor-id="flooding"><span class="header-section-number">0.4.1</span> Flooding</h4>
+<div id="fig-floodElev" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-floodElev-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/flood-elev.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-floodElev-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Linear regression analysis of flood risk (binary) and elevation (m) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-floodSlope" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-floodSlope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/flood-slope.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-floodSlope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Linear regression analysis of flood risk (binary) and slope (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-floodAspect" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-floodAspect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/flood-aspect.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-floodAspect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Linear regression analysis of flood risk (binary) and aspect (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-floodCurve" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-floodCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/flood-curve.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-floodCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Linear regression analysis of flood risk (binary) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-floodSpi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-floodSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/flood-spi.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-floodSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Linear regression analysis of flood risk (binary) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-floodTwi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-floodTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/flood-twi.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-floodTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Linear regression analysis of flood risk (binary) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-floodTri" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-floodTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/flood-tri.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-floodTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Linear regression analysis of flood risk (binary) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-floodSti" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-floodSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/flood-sti.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-floodSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: Linear regression analysis of flood risk (binary) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="elevation" class="level4" data-number="0.4.2">
+<h4 data-number="0.4.2" class="anchored" data-anchor-id="elevation"><span class="header-section-number">0.4.2</span> Elevation</h4>
+<div id="fig-elevSlope" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-elevSlope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/elev-slope.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-elevSlope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: Linear regression analysis of elevation (m) and slope (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-elevAspect" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-elevAspect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/elev-aspect.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-elevAspect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: Linear regression analysis of elevation (m) and aspect (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-elevCurve" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-elevCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/elev-curve.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-elevCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12: Linear regression analysis of elevation (m) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-elevSpi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-elevSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/elev-spi.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-elevSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13: Linear regression analysis of elevation (m) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-elevTwi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-elevTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/elev-twi.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-elevTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14: Linear regression analysis of elevation (m) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-elevTri" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-elevTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/elev-tri.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-elevTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15: Linear regression analysis of elevation (m) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-elevSti" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-elevSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/elev-sti.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-elevSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;16: Linear regression analysis of elevation (m) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="slope" class="level4" data-number="0.4.3">
+<h4 data-number="0.4.3" class="anchored" data-anchor-id="slope"><span class="header-section-number">0.4.3</span> Slope</h4>
+<div id="fig-slopeAspect" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-slopeAspect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/slope-aspect.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slopeAspect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17: Linear regression analysis of slope (°) and aspect (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-slopeCurve" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-slopeCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/slope-curve.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slopeCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18: Linear regression analysis of slope (°) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-slopeSpi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-slopeSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/slope-spi.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slopeSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19: Linear regression analysis of slope (°) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-slopeTwi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-slopeTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/slope-twi.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slopeTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20: Linear regression analysis of slope (°) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-slopeTri" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-slopeTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/slope-tri.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slopeTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21: Linear regression analysis of slope (°) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-slopeSti" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-slopeSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/slope-sti.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slopeSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22: Linear regression analysis of slope (°) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="aspect" class="level4" data-number="0.4.4">
+<h4 data-number="0.4.4" class="anchored" data-anchor-id="aspect"><span class="header-section-number">0.4.4</span> Aspect</h4>
+<div id="fig-aspectCurve" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aspectCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/aspect-curve.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aspectCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23: Linear regression analysis of aspect (°) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-aspectSpi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aspectSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/aspect-spi.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aspectSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24: Linear regression analysis of aspect (°) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-aspectTwi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aspectTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/aspect-twi.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aspectTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;25: Linear regression analysis of aspect (°) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-aspectTri" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aspectTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/aspect-tri.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aspectTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26: Linear regression analysis of aspect (°) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-aspectSti" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aspectSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/aspect-sti.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aspectSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;27: Linear regression analysis of aspect (°) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="curvature" class="level4" data-number="0.4.5">
+<h4 data-number="0.4.5" class="anchored" data-anchor-id="curvature"><span class="header-section-number">0.4.5</span> Curvature</h4>
+<div id="fig-curveSpi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-curveSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/curve-spi.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-curveSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28: Linear regression analysis of curvature and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-curveTwi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-curveTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/curve-twi.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-curveTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;29: Linear regression analysis of curvature and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-curveTri" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-curveTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/curve-tri.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-curveTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30: Linear regression analysis of curvature and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-curveSti" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-curveSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/curve-sti.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-curveSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31: Linear regression analysis of curvature and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="stream-power-index" class="level4" data-number="0.4.6">
+<h4 data-number="0.4.6" class="anchored" data-anchor-id="stream-power-index"><span class="header-section-number">0.4.6</span> Stream Power Index</h4>
+<div id="fig-spiTwi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-spiTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/spi-twi.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-spiTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32: Linear regression analysis of stream power index (SPI) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-spiTri" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-spiTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/spi-tri.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-spiTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;33: Linear regression analysis of stream power index (SPI) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-spiSti" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-spiSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/spi-sti.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-spiSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;34: Linear regression analysis of stream power index (SPI) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="topographic-wetness-index" class="level4" data-number="0.4.7">
+<h4 data-number="0.4.7" class="anchored" data-anchor-id="topographic-wetness-index"><span class="header-section-number">0.4.7</span> Topographic Wetness Index</h4>
+<div id="fig-twiTri" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-twiTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/twi-tri.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-twiTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;35: Linear regression analysis of topographic wetness index (TWI) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+<div id="fig-twiSti" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-twiSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/tri-sti.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-twiSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36: Linear regression analysis of topographic wetness index (TRI) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="topographic-roughness-index" class="level4" data-number="0.4.8">
+<h4 data-number="0.4.8" class="anchored" data-anchor-id="topographic-roughness-index"><span class="header-section-number">0.4.8</span> Topographic Roughness Index</h4>
+<div id="fig-triSti" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-triSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Collinearity/tri-sti.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-triSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;37: Linear regression analysis of topographic roughness index (TRI) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
+</figcaption>
+</figure>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./appendix.html" class="pagination-link" aria-label="Pair Wise Regressions">
+        <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Pair Wise Regressions</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
