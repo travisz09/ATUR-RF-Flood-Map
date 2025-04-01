@@ -83,22 +83,380 @@ variables.</p>
 </front>
 
 <body>
-<sec id="introduction">
-  <title>1 Introduction</title>
-  <p>Tehrany et al.
-  (<xref alt="2019" rid="ref-Tehrany_Jones_Shabani_2019" ref-type="bibr">2019</xref>)</p>
+<sec id="background">
+  <title>1 Background</title>
+  <p>A critical component of the Arizona Department of Water Resources
+  (ADWR) Tri-University Recharge Project (TURP, a.k.a ATUR) is a state
+  wide assessment of flooding potential. Initial efforts focused on a
+  traditional suitability analysis approach, using the analytical
+  hierarchy process (AHP) for multi-criterion decision making, largely
+  based on the work by Aloui et al.
+  (<xref alt="2024" rid="ref-Aloui_Zghibi_Mazzoni_Elomri_Al-Ansari_2024" ref-type="bibr">2024</xref>).
+  These methods saw initial success, and are continuing to be developed
+  and refined. However, it became apparent that there were a number of
+  shortcomings inherent in this analysis which are not easily
+  addressed.</p>
+  <p>Firstly, the results of such an analysis are intrinsically linked
+  to the data layers used, and the weighting schema determined by the
+  AHP. As additional data sets became available, and alternate weighting
+  schemas were tested we generated multiple versions of mapped flood
+  potential which did not necessarily agree with each other. In the
+  absence of high quality ground-truthed data it was difficult to
+  validate these results and it was not clear to the project team which
+  version was the best. This underscores the need for expert involvement
+  at every stage in these AHP based analysis. While there is a wealth of
+  hydrological expertise within the larger ATUR project, method
+  development and implementation has largely been conducted by a GIS
+  technician with marginal hydrologic knowledge, and it has been
+  difficult to foster sustained buy-in from team members on this portion
+  of the project.</p>
+  <p>Furthermore, it was extremely difficult to develop a single
+  generalized model that would be effective across the whole state.
+  Because of the wide array of ecological and geologic conditions that
+  are present across the state variables that are important for flood
+  risk in one region may not apply in other regions. Lastly, even if
+  these technical issues could be overcome, there was still gaps in the
+  input data layers, resulting in unclassified regions.</p>
+  <p>While the traditional suitability analysis methods of assessing
+  flood potential is still valuable to the project, and will be retained
+  and developed further, the reality of these challenges lead us to
+  reevaluate our overall approach and consider alternate methods. Work
+  by Mudashiru et al.
+  (<xref alt="2021" rid="ref-Mudashiru_Sabtu_Abustan_Balogun_2021" ref-type="bibr">2021</xref>)
+  summarized the various methods used by other researchers in this
+  field, which includes AHP based methods as well as physical modeling
+  and machine learning applications. The machine learning methods
+  utilized by Tehrany et al.
+  (<xref alt="2019" rid="ref-Tehrany_Jones_Shabani_2019" ref-type="bibr">2019</xref>)
+  appeared to be particularly relevant and applicable. In particular,
+  their use of topographic data <bold>only</bold> was particularly
+  intriguing. These data sets are fully calculable from a digital
+  elevation model (DEM), which are readily available, easily accessible,
+  and have full coverage over the study area. These findings lead to a
+  renewed initiative to apply a machine learning based method towards
+  the objective of a state wide flooding potential map.</p>
 </sec>
 <sec id="sec-data-methods">
   <title>2 Data &amp; Methods</title>
+  <p>All explanatory variables for the model were derived from the NASA
+  Shuttle Radar Topography Mission (SRTM) 30-m DEM. Slope, aspect,
+  curvature, stream power index (SPI), topographic wetness index (TWI),
+  and sediment transport index (STI) were all calculated in ArcGIS Pro
+  (3.4.3). Slope, aspect and curvature were calculated using the Surface
+  Parameters tool (Spatial Analyst). SPI, TWI, and STI were calculated
+  as per Tehrany et al.
+  (<xref alt="2019" rid="ref-Tehrany_Jones_Shabani_2019" ref-type="bibr">2019</xref>)
+  using the Raster Calculator according to Equations
+  <xref alt="1" rid="eq-spi">1</xref>-<xref alt="3" rid="eq-sti">3</xref></p>
+  <p><styled-content id="eq-spi"><disp-formula><alternatives>
+  <tex-math><![CDATA[
+  SPI = A_s * tan(ß)
+   \qquad(1)]]></tex-math>
+  <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>S</mml:mi><mml:mi>P</mml:mi><mml:mi>I</mml:mi><mml:mo>=</mml:mo><mml:msub><mml:mi>A</mml:mi><mml:mi>s</mml:mi></mml:msub><mml:mo>*</mml:mo><mml:mi>t</mml:mi><mml:mi>a</mml:mi><mml:mi>n</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>ß</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mspace width="2.0em"></mml:mspace><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mn>1</mml:mn><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></disp-formula></styled-content></p>
+  <p><styled-content id="eq-twi"><disp-formula><alternatives>
+  <tex-math><![CDATA[
+  TWI = ln(A_s / tan(ß))
+   \qquad(2)]]></tex-math>
+  <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>T</mml:mi><mml:mi>W</mml:mi><mml:mi>I</mml:mi><mml:mo>=</mml:mo><mml:mi>l</mml:mi><mml:mi>n</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>A</mml:mi><mml:mi>s</mml:mi></mml:msub><mml:mi>/</mml:mi><mml:mi>t</mml:mi><mml:mi>a</mml:mi><mml:mi>n</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>ß</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mspace width="2.0em"></mml:mspace><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mn>2</mml:mn><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></disp-formula></styled-content></p>
+  <p><styled-content id="eq-sti"><disp-formula><alternatives>
+  <tex-math><![CDATA[
+  STI = (A_s / 22.13)^{0.6} * (sin(ß)/0.0896)^{1.3}
+   \qquad(3)]]></tex-math>
+  <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>S</mml:mi><mml:mi>T</mml:mi><mml:mi>I</mml:mi><mml:mo>=</mml:mo><mml:msup><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>A</mml:mi><mml:mi>s</mml:mi></mml:msub><mml:mi>/</mml:mi><mml:mn>22.13</mml:mn><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mn>0.6</mml:mn></mml:msup><mml:mo>*</mml:mo><mml:msup><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>s</mml:mi><mml:mi>i</mml:mi><mml:mi>n</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>ß</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mi>/</mml:mi><mml:mn>0.0896</mml:mn><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mn>1.3</mml:mn></mml:msup><mml:mspace width="2.0em"></mml:mspace><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mn>3</mml:mn><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></disp-formula></styled-content></p>
+  <p>where A<sub>s</sub> is catchment area (m) and ß is slope
+  (radians).</p>
+  <p>Similarly, Topographic Roughness Index (TRI) was calculated as per
+  Tehrany et al.
+  (<xref alt="2019" rid="ref-Tehrany_Jones_Shabani_2019" ref-type="bibr">2019</xref>)
+  using a custom R (4.4.1) function with the package terra (1.7-78)
+  according to <xref alt="Equation 4" rid="eq-tri">Equation 4</xref></p>
+  <p><styled-content id="eq-tri"><disp-formula><alternatives>
+  <tex-math><![CDATA[
+  TRI = \left[ \sum (χ_{ij} - χ_{00})^2 \right] ^{0.5}
+   \qquad(4)]]></tex-math>
+  <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>T</mml:mi><mml:mi>R</mml:mi><mml:mi>I</mml:mi><mml:mo>=</mml:mo><mml:msup><mml:mrow><mml:mo stretchy="true" form="prefix">[</mml:mo><mml:mo>∑</mml:mo><mml:msup><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>χ</mml:mi><mml:mrow><mml:mi>i</mml:mi><mml:mi>j</mml:mi></mml:mrow></mml:msub><mml:mo>−</mml:mo><mml:msub><mml:mi>χ</mml:mi><mml:mn>00</mml:mn></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mn>2</mml:mn></mml:msup><mml:mo stretchy="true" form="postfix">]</mml:mo></mml:mrow><mml:mn>0.5</mml:mn></mml:msup><mml:mspace width="2.0em"></mml:mspace><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mn>4</mml:mn><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></disp-formula></styled-content></p>
+  <p>where χ<sub>ij</sub> is the elevation at coordinates (i, j) and
+  χ<sub>00</sub> is the elevation at coordinates (0, 0) for a 3x3 focal
+  neighborhood. The code used to calculate TRI is available on
+  <ext-link ext-link-type="uri" xlink:href="https://github.com/travisz09/TopographicRoughnessIndex">GitHub</ext-link>.</p>
+  <p>Flood data used for training the model was obtained from the
+  Federal Emergency Management Administration (FEMA) National Flood
+  Hazards Layer, which provides 100-year flood maps for many areas of
+  the US. The data was manually downloaded for each county in AZ from
+  the FEMA
+  <ext-link ext-link-type="uri" xlink:href="https://hazards-fema.maps.arcgis.com/apps/webappviewer/index.html?id=8b0adb51996444d4879338b5529aa9cd">data
+  viewer</ext-link> (accessed 3/15/2025). Data layers were merged in
+  ArcGIS Pro (3.4.3), and the vector data was converted to a raster with
+  a 10 m resolution. Additionally, the FEMA data was reclassified to a
+  binary output, either flooded or not flooded (during a 100-year flood
+  event), eliminating details such as survey methods and flow depth.</p>
+  <p>The machine learning model was performed in Google Earth Engine
+  (GEE). The SRTM elevation data was access and clipped to the study
+  area natively through GEE servers, all other data layers, including
+  the study area shapefile, were uploaded as an asset to GEE prior to
+  model implementation.</p>
+  <p>Prior to modeling, the collinearity of the explanatory variables
+  was explored using a series of pair-wise linear regression plots shown
+  in Figures
+  <xref alt="A1" rid="appfig-floodElev">A1</xref>-<xref alt="A36" rid="appfig-triSti">A36</xref>.
+  For collinearity analysis 5,000 points were randomly sampled across
+  the study area, the maximum number of points which can be plotted in
+  GEE. The collinearity of each pair-wise regression is summarized
+  visually in <xref alt="Figure 1" rid="fig-Rsquared">Figure 1</xref>
+  using the R-squared statistic of each comparison.</p>
+  <fig id="fig-Rsquared">
+    <caption><p>Figure 1: Color coded R-squared statistic for each
+    pair-wise linear regression (green = high, red = low), representing
+    the collinearity of each variable used for modeling.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/CorrelationMatrix.png" />
+  </fig>
 </sec>
 <sec id="conclusion">
   <title>3 Conclusion</title>
+</sec>
+<sec id="references">
+  <title>References</title>
+</sec>
+<sec id="appendix">
+  <title>4 Appendix</title>
+  <p><bold>Flooding</bold></p>
+  <fig id="appfig-floodElev">
+    <caption><p>A1: Linear regression analysis of flood risk (binary)
+    and elevation (m) for 5,000 randomly sampled points across the full
+    study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/flood-elev.png" />
+  </fig>
+  <fig id="appfig-floodSlope">
+    <caption><p>A2: Linear regression analysis of flood risk (binary)
+    and slope (°) for 5,000 randomly sampled points across the full
+    study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/flood-slope.png" />
+  </fig>
+  <fig id="appfig-floodAspect">
+    <caption><p>A3: Linear regression analysis of flood risk (binary)
+    and aspect (°) for 5,000 randomly sampled points across the full
+    study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/flood-aspect.png" />
+  </fig>
+  <fig id="appfig-floodCurve">
+    <caption><p>A4: Linear regression analysis of flood risk (binary)
+    and curvature for 5,000 randomly sampled points across the full
+    study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/flood-curve.png" />
+  </fig>
+  <fig id="appfig-floodSpi">
+    <caption><p>A5: Linear regression analysis of flood risk (binary)
+    and stream power index (SPI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/flood-spi.png" />
+  </fig>
+  <fig id="appfig-floodTwi">
+    <caption><p>A6: Linear regression analysis of flood risk (binary)
+    and topographic wetness index (TWI) for 5,000 randomly sampled
+    points across the full study area, encompassing
+    Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/flood-twi.png" />
+  </fig>
+  <fig id="appfig-floodTri">
+    <caption><p>A7: Linear regression analysis of flood risk (binary)
+    and topographic roughness index (TRI) for 5,000 randomly sampled
+    points across the full study area, encompassing
+    Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/flood-tri.png" />
+  </fig>
+  <fig id="appfig-floodSti">
+    <caption><p>A8: Linear regression analysis of flood risk (binary)
+    and sediment transport index (STI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/flood-sti.png" />
+  </fig>
+  <p><bold>Elevation</bold></p>
+  <fig id="appfig-elevSlope">
+    <caption><p>A9: Linear regression analysis of elevation (m) and
+    slope (°) for 5,000 randomly sampled points across the full study
+    area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/elev-slope.png" />
+  </fig>
+  <fig id="appfig-elevAspect">
+    <caption><p>A10: Linear regression analysis of elevation (m) and
+    aspect (°) for 5,000 randomly sampled points across the full study
+    area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/elev-aspect.png" />
+  </fig>
+  <fig id="appfig-elevCurve">
+    <caption><p>A11: Linear regression analysis of elevation (m) and
+    curvature for 5,000 randomly sampled points across the full study
+    area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/elev-curve.png" />
+  </fig>
+  <fig id="appfig-elevSpi">
+    <caption><p>A12: Linear regression analysis of elevation (m) and
+    stream power index (SPI) for 5,000 randomly sampled points across
+    the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/elev-spi.png" />
+  </fig>
+  <fig id="appfig-elevTwi">
+    <caption><p>A13: Linear regression analysis of elevation (m) and
+    topographic wetness index (TWI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/elev-twi.png" />
+  </fig>
+  <fig id="appfig-elevTri">
+    <caption><p>A14: Linear regression analysis of elevation (m) and
+    topographic roughness index (TRI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/elev-tri.png" />
+  </fig>
+  <fig id="appfig-elevSti">
+    <caption><p>A15: Linear regression analysis of elevation (m) and
+    sediment transport index (STI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/elev-sti.png" />
+  </fig>
+  <p><bold>Slope</bold></p>
+  <fig id="appfig-slopeAspect">
+    <caption><p>A16: Linear regression analysis of slope (°) and aspect
+    (°) for 5,000 randomly sampled points across the full study area,
+    encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/slope-aspect.png" />
+  </fig>
+  <fig id="appfig-slopeCurve">
+    <caption><p>A17: Linear regression analysis of slope (°) and
+    curvature for 5,000 randomly sampled points across the full study
+    area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/slope-curve.png" />
+  </fig>
+  <fig id="appfig-slopeSpi">
+    <caption><p>A18: Linear regression analysis of slope (°) and stream
+    power index (SPI) for 5,000 randomly sampled points across the full
+    study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/slope-spi.png" />
+  </fig>
+  <fig id="appfig-slopeTwi">
+    <caption><p>A19: Linear regression analysis of slope (°) and
+    topographic wetness index (TWI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/slope-twi.png" />
+  </fig>
+  <fig id="appfig-slopeTri">
+    <caption><p>A20: Linear regression analysis of slope (°) and
+    topographic roughness index (TRI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/slope-tri.png" />
+  </fig>
+  <fig id="appfig-slopeSti">
+    <caption><p>A21: Linear regression analysis of slope (°) and
+    sediment transport index (STI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/slope-sti.png" />
+  </fig>
+  <p><bold>Aspect</bold></p>
+  <fig id="appfig-aspectCurve">
+    <caption><p>A22: Linear regression analysis of aspect (°) and
+    curvature for 5,000 randomly sampled points across the full study
+    area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/aspect-curve.png" />
+  </fig>
+  <fig id="appfig-aspectSpi">
+    <caption><p>A23: Linear regression analysis of aspect (°) and stream
+    power index (SPI) for 5,000 randomly sampled points across the full
+    study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/aspect-spi.png" />
+  </fig>
+  <fig id="appfig-aspectTwi">
+    <caption><p>A24: Linear regression analysis of aspect (°) and
+    topographic wetness index (TWI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/aspect-twi.png" />
+  </fig>
+  <fig id="appfig-aspectTri">
+    <caption><p>A25: Linear regression analysis of aspect (°) and
+    topographic roughness index (TRI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/aspect-tri.png" />
+  </fig>
+  <fig id="appfig-aspectSti">
+    <caption><p>A26: Linear regression analysis of aspect (°) and
+    sediment transport index (STI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/aspect-sti.png" />
+  </fig>
+  <p><bold>Curvature</bold></p>
+  <fig id="appfig-curveSpi">
+    <caption><p>A27: Linear regression analysis of curvature and stream
+    power index (SPI) for 5,000 randomly sampled points across the full
+    study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/curve-spi.png" />
+  </fig>
+  <fig id="appfig-curveTwi">
+    <caption><p>A28: Linear regression analysis of curvature and
+    topographic wetness index (TWI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/curve-twi.png" />
+  </fig>
+  <fig id="appfig-curveTri">
+    <caption><p>A29: Linear regression analysis of curvature and
+    topographic roughness index (TRI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/curve-tri.png" />
+  </fig>
+  <fig id="appfig-curveSti">
+    <caption><p>A30: Linear regression analysis of curvature and
+    sediment transport index (STI) for 5,000 randomly sampled points
+    across the full study area, encompassing Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/curve-sti.png" />
+  </fig>
+  <p><bold>Stream Power Index</bold></p>
+  <fig id="appfig-spiTwi">
+    <caption><p>A31: Linear regression analysis of stream power index
+    (SPI) and topographic wetness index (TWI) for 5,000 randomly sampled
+    points across the full study area, encompassing
+    Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/spi-twi.png" />
+  </fig>
+  <fig id="appfig-spiTri">
+    <caption><p>A32: Linear regression analysis of stream power index
+    (SPI) and topographic roughness index (TRI) for 5,000 randomly
+    sampled points across the full study area, encompassing
+    Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/spi-tri.png" />
+  </fig>
+  <fig id="appfig-spiSti">
+    <caption><p>A33: Linear regression analysis of stream power index
+    (SPI) and sediment transport index (STI) for 5,000 randomly sampled
+    points across the full study area, encompassing
+    Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/spi-sti.png" />
+  </fig>
+  <p><bold>Topographic Wetness Index</bold></p>
+  <fig id="appfig-twiTri">
+    <caption><p>A34: Linear regression analysis of topographic wetness
+    index (TWI) and topographic roughness index (TRI) for 5,000 randomly
+    sampled points across the full study area, encompassing
+    Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/twi-tri.png" />
+  </fig>
+  <fig id="appfig-twiSti">
+    <caption><p>A35: Linear regression analysis of topographic wetness
+    index (TRI) and sediment transport index (STI) for 5,000 randomly
+    sampled points across the full study area, encompassing
+    Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/tri-sti.png" />
+  </fig>
+  <p><bold>Topographic Roughness Index</bold></p>
+  <fig id="appfig-triSti">
+    <caption><p>A36: Linear regression analysis of topographic roughness
+    index (TRI) and sediment transport index (STI) for 5,000 randomly
+    sampled points across the full study area, encompassing
+    Arizona.</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Collinearity/tri-sti.png" />
+  </fig>
 </sec>
 </body>
 
 <back>
 <ref-list>
-  <title>References</title>
+  <title></title>
   <ref id="ref-Tehrany_Jones_Shabani_2019">
     <element-citation publication-type="article-journal">
       <person-group person-group-type="author">
@@ -116,336 +474,45 @@ variables.</p>
       <lpage>192</lpage>
     </element-citation>
   </ref>
+  <ref id="ref-Aloui_Zghibi_Mazzoni_Elomri_Al-Ansari_2024">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Aloui</surname><given-names>Sarra</given-names></name>
+        <name><surname>Zghibi</surname><given-names>Adel</given-names></name>
+        <name><surname>Mazzoni</surname><given-names>Annamaria</given-names></name>
+        <name><surname>Elomri</surname><given-names>Adel</given-names></name>
+        <name><surname>Al-Ansari</surname><given-names>Tareq</given-names></name>
+      </person-group>
+      <article-title>Identifying suitable zones for integrated aquifer recharge and flood control in arid qatar using GIS-based multi-criteria decision-making</article-title>
+      <year iso-8601-date="2024-05">2024</year><month>05</month>
+      <volume>25</volume>
+      <issn>2352-801X</issn>
+      <pub-id pub-id-type="doi">10.1016/j.gsd.2024.101137</pub-id>
+      <fpage>101137</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-Mudashiru_Sabtu_Abustan_Balogun_2021">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Mudashiru</surname><given-names>Rofiat Bunmi</given-names></name>
+        <name><surname>Sabtu</surname><given-names>Nuridah</given-names></name>
+        <name><surname>Abustan</surname><given-names>Ismail</given-names></name>
+        <name><surname>Balogun</surname><given-names>Waheed</given-names></name>
+      </person-group>
+      <article-title>Flood hazard mapping methods: A review</article-title>
+      <source>Journal of Hydrology</source>
+      <year iso-8601-date="2021-12">2021</year><month>12</month>
+      <volume>603</volume>
+      <issn>0022-1694</issn>
+      <pub-id pub-id-type="doi">10.1016/j.jhydrol.2021.126846</pub-id>
+      <fpage>126846</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
 </ref-list>
 </back>
 
-<sub-article article-type="notebook" id="nb-4-nb-1">
-<front-stub>
-<title-group>
-<article-title>Data Screening</article-title>
-</title-group>
-<contrib-group>
-<contrib contrib-type="author">
-<contrib-id contrib-id-type="orcid">0000-0002-0760-5497</contrib-id>
-<name>
-<surname>Purves</surname>
-<given-names>Steve</given-names>
-</name>
-<string-name>Steve Purves</string-name>
 
-</contrib>
-<contrib contrib-type="author">
-<name>
-<surname>Wickham</surname>
-<given-names>Charlotte</given-names>
-</name>
-<string-name>Charlotte Wickham</string-name>
-
-<xref ref-type="author-note" rid="auth-note-2-nb-1">2</xref>
-</contrib>
-</contrib-group>
-<author-notes>
-<fn id="auth-note-2-nb-1" fn-type="author-note" symbol="2">Edited original
-notebook by Steve Purves</fn>
-</author-notes>
-</front-stub>
-
-<body>
-<sec id="cell-25276572-nb-1" specific-use="notebook-content">
-<preformat>import pandas as pd
-import matplotlib.pyplot as plt</preformat>
-</sec>
-<sec id="cell-7f05db89-nb-1" specific-use="notebook-content">
-<p>Import <monospace>la-palma.csv</monospace> - a clean subset of
-<ext-link ext-link-type="uri" xlink:href="https://github.com/Notebooks-Now/submission-quarto-full/blob/main/data/catalogoComunSV_1663233588717.csv"><monospace>catalogoComunSV_1663233588717.csv</monospace></ext-link>:</p>
-</sec>
-<sec id="da2659e5-nb-1" specific-use="notebook-content">
-<preformat>df = pd.read_csv('la-palma.csv')
-df['DateTime'] = pd.to_datetime(df['DateTime'])
-df = df.sort_values(by=['DateTime'], ascending=True)
-df.head()</preformat>
-<boxed-text>
-  <table-wrap>
-    <table border="1">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>Longitude</th>
-          <th>Latitude</th>
-          <th>Depth(km)</th>
-          <th>Magnitude</th>
-          <th>DateTime</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>11346</td>
-          <td>-17.8349</td>
-          <td>28.5346</td>
-          <td>26.0</td>
-          <td>1.6</td>
-          <td>2017-03-09 23:44:06+00:00</td>
-        </tr>
-        <tr>
-          <td>11343</td>
-          <td>-17.8459</td>
-          <td>28.5491</td>
-          <td>27.0</td>
-          <td>2.0</td>
-          <td>2017-03-10 00:16:10+00:00</td>
-        </tr>
-        <tr>
-          <td>11344</td>
-          <td>-17.8863</td>
-          <td>28.5008</td>
-          <td>20.0</td>
-          <td>2.1</td>
-          <td>2017-03-10 00:16:11+00:00</td>
-        </tr>
-        <tr>
-          <td>11345</td>
-          <td>-17.8657</td>
-          <td>28.5204</td>
-          <td>30.0</td>
-          <td>1.6</td>
-          <td>2017-03-10 03:20:26+00:00</td>
-        </tr>
-        <tr>
-          <td>11342</td>
-          <td>-17.7156</td>
-          <td>28.5985</td>
-          <td>0.0</td>
-          <td>1.6</td>
-          <td>2017-08-21 02:06:55+00:00</td>
-        </tr>
-      </tbody>
-    </table>
-  </table-wrap>
-</boxed-text>
-</sec>
-<sec id="ae1253df-nb-1" specific-use="notebook-content">
-<preformat>df.describe()</preformat>
-<boxed-text>
-  <table-wrap>
-    <table border="1">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>Longitude</th>
-          <th>Latitude</th>
-          <th>Depth(km)</th>
-          <th>Magnitude</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>count</td>
-          <td>11347.000000</td>
-          <td>11347.000000</td>
-          <td>11347.000000</td>
-          <td>11347.000000</td>
-        </tr>
-        <tr>
-          <td>mean</td>
-          <td>-17.844062</td>
-          <td>28.568893</td>
-          <td>14.089345</td>
-          <td>2.432423</td>
-        </tr>
-        <tr>
-          <td>std</td>
-          <td>0.027345</td>
-          <td>0.021899</td>
-          <td>8.624787</td>
-          <td>0.705282</td>
-        </tr>
-        <tr>
-          <td>min</td>
-          <td>-17.995800</td>
-          <td>28.310200</td>
-          <td>0.000000</td>
-          <td>0.200000</td>
-        </tr>
-        <tr>
-          <td>25%</td>
-          <td>-17.854100</td>
-          <td>28.558000</td>
-          <td>10.100000</td>
-          <td>1.900000</td>
-        </tr>
-        <tr>
-          <td>50%</td>
-          <td>-17.838700</td>
-          <td>28.564000</td>
-          <td>11.300000</td>
-          <td>2.600000</td>
-        </tr>
-        <tr>
-          <td>75%</td>
-          <td>-17.829700</td>
-          <td>28.574300</td>
-          <td>13.900000</td>
-          <td>2.900000</td>
-        </tr>
-        <tr>
-          <td>max</td>
-          <td>-17.705700</td>
-          <td>28.697800</td>
-          <td>46.900000</td>
-          <td>5.100000</td>
-        </tr>
-      </tbody>
-    </table>
-  </table-wrap>
-</boxed-text>
-</sec>
-<sec id="cell-81b4dfb2-nb-1" specific-use="notebook-content">
-<preformat>df.plot.scatter(x=&quot;Longitude&quot;, y=&quot;Latitude&quot;, figsize=(12,12), grid=&quot;on&quot;);</preformat>
-<boxed-text>
-  <graphic mimetype="image" mime-subtype="png" xlink:href="data-screening_files/figure-jats/cell-5-output-1.png" />
-</boxed-text>
-</sec>
-<sec id="cell-19a1ba0d-nb-1" specific-use="notebook-content">
-<sec id="filter-nb-1">
-  <title>Filter</title>
-  <p>Also some rows seem to be missing depth measurements, (see
-  differences in the <bold>count</bold> for columns above) - take only
-  rows with valid depths</p>
-  </sec>
-  <sec id="e56a69b3-nb-1" specific-use="notebook-content">
-  <preformat>df = df[df['Depth(km)'].notna()]
-df.describe()</preformat>
-  <boxed-text>
-    <table-wrap>
-      <table border="1">
-        <thead>
-          <tr style="text-align: right;">
-            <th></th>
-            <th>Longitude</th>
-            <th>Latitude</th>
-            <th>Depth(km)</th>
-            <th>Magnitude</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>count</td>
-            <td>11347.000000</td>
-            <td>11347.000000</td>
-            <td>11347.000000</td>
-            <td>11347.000000</td>
-          </tr>
-          <tr>
-            <td>mean</td>
-            <td>-17.844062</td>
-            <td>28.568893</td>
-            <td>14.089345</td>
-            <td>2.432423</td>
-          </tr>
-          <tr>
-            <td>std</td>
-            <td>0.027345</td>
-            <td>0.021899</td>
-            <td>8.624787</td>
-            <td>0.705282</td>
-          </tr>
-          <tr>
-            <td>min</td>
-            <td>-17.995800</td>
-            <td>28.310200</td>
-            <td>0.000000</td>
-            <td>0.200000</td>
-          </tr>
-          <tr>
-            <td>25%</td>
-            <td>-17.854100</td>
-            <td>28.558000</td>
-            <td>10.100000</td>
-            <td>1.900000</td>
-          </tr>
-          <tr>
-            <td>50%</td>
-            <td>-17.838700</td>
-            <td>28.564000</td>
-            <td>11.300000</td>
-            <td>2.600000</td>
-          </tr>
-          <tr>
-            <td>75%</td>
-            <td>-17.829700</td>
-            <td>28.574300</td>
-            <td>13.900000</td>
-            <td>2.900000</td>
-          </tr>
-          <tr>
-            <td>max</td>
-            <td>-17.705700</td>
-            <td>28.697800</td>
-            <td>46.900000</td>
-            <td>5.100000</td>
-          </tr>
-        </tbody>
-      </table>
-    </table-wrap>
-  </boxed-text>
-  </sec>
-  <sec id="cell-1368822d-nb-1" specific-use="notebook-content">
-  <preformat>plt.figure(figsize=(20,6))
-plt.subplot(1,3,1)
-df[&quot;Latitude&quot;].plot.hist(bins=20, density=True)
-plt.subplot(1,3,2)
-df[&quot;Longitude&quot;].plot.hist(bins=20, density=True)
-plt.subplot(1,3,3)
-df[&quot;Depth(km)&quot;].plot.hist(bins=50, density=True)</preformat>
-  <boxed-text>
-    <graphic mimetype="image" mime-subtype="png" xlink:href="data-screening_files/figure-jats/cell-7-output-1.png" />
-  </boxed-text>
-  </sec>
-  <sec id="da7ad095-nb-1" specific-use="notebook-content">
-</sec>
-<sec id="spatial-plot-nb-1">
-  <title>Spatial Plot</title>
-  <p>Scatter plot the spatial locations of events</p>
-  </sec>
-  <sec id="cell-fig-spatial-plot-nb-1" specific-use="notebook-content">
-  <preformat>#| label: fig-spatial-plot
-#| fig-cap: Locations of earthquakes on La Palma since 2017.
-#| fig-alt: A scatterplot of earthquake locations plotting latitude against longitude.
-from matplotlib import colormaps
-cmap = colormaps['viridis_r']
-ax = df.plot.scatter(x=&quot;Longitude&quot;, y=&quot;Latitude&quot;, 
-                     s=47-df[&quot;Depth(km)&quot;], c=df[&quot;Magnitude&quot;], 
-                     figsize=(12,10), grid=&quot;on&quot;, cmap=cmap)
-colorbar = ax.collections[0].colorbar
-colorbar.set_label(&quot;Magnitude&quot;)
-
-plt.show()</preformat>
-  <boxed-text>
-    <fig id="fig-spatial-plot-nb-1">
-      <caption><p>Locations of earthquakes on La Palma since
-      2017.</p></caption>
-      <graphic mimetype="image" mime-subtype="png" xlink:href="data-screening_files/figure-jats/fig-spatial-plot-output-1.png" />
-    </fig>
-  </boxed-text>
-  </sec>
-  <sec id="cell-22ac5ce7-nb-1" specific-use="notebook-content">
-  <sec id="timeline-plot-nb-1">
-    <title>Timeline Plot</title>
-    <p>Scatter plot the event time series and look for any quantization
-    issues. Have times &amp; dates been loaded correctly?</p>
-    <p>ax = df.plot.scatter(x=‘DateTime’, y=‘Depth(km)’, figsize=(20,8))
-    ax.set_ylim(50,0);</p>
-    </sec>
-  </sec>
-</sec>
-</body>
-
-
-
-<back>
-</back>
-
-
-</sub-article>
 
 </article>
