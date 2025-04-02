@@ -94,7 +94,7 @@ variables.</p>
   (<xref alt="2024" rid="ref-Aloui_Zghibi_Mazzoni_Elomri_Al-Ansari_2024" ref-type="bibr">2024</xref>).
   These methods saw initial success, and are continuing to be developed
   and refined. However, it became apparent that there were a number of
-  shortcomings inherent in this analysis which are not easily
+  shortcomings inherent in this approach which are not easily
   addressed.</p>
   <p>Firstly, the results of such an analysis are intrinsically linked
   to the data layers used, and the weighting schema determined by the
@@ -104,9 +104,9 @@ variables.</p>
   absence of high quality ground-truthed data it was difficult to
   validate these results and it was not clear to the project team which
   version was the best. This underscores the need for expert involvement
-  at every stage in these AHP based analysis. While there is a wealth of
-  hydrological expertise within the larger ATUR project, method
-  development and implementation has largely been conducted by a GIS
+  at every stage of AHP based analysis. While there is a wealth of
+  hydrological expertise within the larger ATUR project, development and
+  implementation of this process has largely been conducted by a GIS
   technician with marginal hydrologic knowledge, and it has been
   difficult to foster sustained buy-in from team members on this portion
   of the project.</p>
@@ -128,20 +128,20 @@ variables.</p>
   and machine learning applications. The machine learning methods
   utilized by Tehrany et al.
   (<xref alt="2019" rid="ref-Tehrany_Jones_Shabani_2019" ref-type="bibr">2019</xref>)
-  appeared to be particularly relevant and applicable. In particular,
-  their use of topographic data <bold>only</bold> was particularly
-  intriguing. These data sets are fully calculable from a digital
-  elevation model (DEM), which are readily available, easily accessible,
-  and have full coverage over the study area. These findings lead to a
-  renewed initiative to apply a machine learning based method towards
-  the objective of a state wide flooding potential map.</p>
+  appeared to be particularly relevant. Specifically, their use of
+  topographic data <bold>only</bold> was particularly intriguing. These
+  data sets are fully derived from digital elevation models (DEMs),
+  which are readily available, easily accessible, and have full coverage
+  over the study area. These findings lead to a renewed initiative to
+  apply a machine learning based method towards the objective of a state
+  wide flooding potential map.</p>
 </sec>
 <sec id="sec-data-methods">
   <title>2 Data &amp; Methods</title>
   <sec id="topography-data">
     <title>2.1 Topography Data</title>
     <p>All explanatory variables for the model were derived from the
-    NASA Shuttle Radar Topography Mission (SRTM) 30-m DEM. Slope,
+    NASA Shuttle Radar Topography Mission (SRTM) 30 m DEM. Slope,
     aspect, curvature, stream power index (SPI), topographic wetness
     index (TWI), and sediment transport index (STI) were all calculated
     in ArcGIS Pro (3.4.3). Slope, aspect and curvature were calculated
@@ -165,7 +165,7 @@ variables.</p>
     STI = (A_s / 22.13)^{0.6} * (sin(ß)/0.0896)^{1.3}
      \qquad(3)]]></tex-math>
     <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>S</mml:mi><mml:mi>T</mml:mi><mml:mi>I</mml:mi><mml:mo>=</mml:mo><mml:msup><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>A</mml:mi><mml:mi>s</mml:mi></mml:msub><mml:mi>/</mml:mi><mml:mn>22.13</mml:mn><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mn>0.6</mml:mn></mml:msup><mml:mo>*</mml:mo><mml:msup><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>s</mml:mi><mml:mi>i</mml:mi><mml:mi>n</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>ß</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mi>/</mml:mi><mml:mn>0.0896</mml:mn><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mn>1.3</mml:mn></mml:msup><mml:mspace width="2.0em"></mml:mspace><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mn>3</mml:mn><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></disp-formula></styled-content></p>
-    <p>where A<sub>s</sub> is catchment area (m) and ß is slope
+    <p>where A<sub>s</sub> is the catchment area (m) and ß is the slope
     (radians).</p>
     <p>Similarly, Topographic Roughness Index (TRI) was calculated as
     per Tehrany et al.
@@ -195,16 +195,19 @@ variables.</p>
     ArcGIS Pro (3.4.3), and the vector data was converted to a raster
     with a 10 m resolution. Additionally, the FEMA data was reclassified
     to a binary output, either flooded or not flooded (during a 100-year
-    flood event), eliminating details such as survey methods and flow
-    depth.</p>
+    flood event), eliminating superfluous details such as survey methods
+    and flow depth.</p>
   </sec>
-  <sec id="variable-collinearity">
-    <title>2.3 Variable Collinearity</title>
+  <sec id="google-earth-engine-preparation">
+    <title>2.3 Google Earth Engine Preparation</title>
     <p>The machine learning model was performed in Google Earth Engine
     (GEE). The SRTM elevation data was access and clipped to the study
     area natively through GEE servers, all other data layers, including
     the study area shapefile, were uploaded as an asset to GEE prior to
     model implementation.</p>
+  </sec>
+  <sec id="variable-collinearity">
+    <title>2.4 Variable Collinearity</title>
     <p>Prior to modeling, the collinearity of the explanatory variables
     was explored using a series of pair-wise linear regression plots
     shown in Figures
@@ -231,14 +234,14 @@ variables.</p>
     </fig>
   </sec>
   <sec id="initial-model-testing-and-development">
-    <title>2.4 Initial Model Testing and Development</title>
+    <title>2.5 Initial Model Testing and Development</title>
     <p>Many models were iteratively explored using several machine
     learning algorithms, various combinations of explanatory variables,
     and many hyperparameterization values. For all initial model trials
     the study area was reduced to the San Pedro watershed, a well
     characterized watershed with approx. 66% FEMA flood map coverage
     (visual estimate). A 70:30::training:testing data structure was
-    adopted, and while a range of sampled points were tested, this ratio
+    adopted, and while a range of sampled points was tested, this ratio
     was maintained throughout. Model performance was primarily assessed
     through an overall accuracy score, with confusion matrix analysis
     performed for highly accurate models.</p>
@@ -255,7 +258,7 @@ variables.</p>
     classification, and the most effort was spent on developing that
     model.</p>
     <sec id="random-forest-model-development">
-      <title>2.4.1 Random Forest Model Development</title>
+      <title>2.5.1 Random Forest Model Development</title>
       <p>Over 400 RF models were tested for the San Pedro watershed.
       Model optimization parameters tested included the number of trees,
       the number of sampling points (from 20,000 up to 60,000), and
@@ -273,8 +276,8 @@ variables.</p>
       overall accuracy of 87.4% at 70 trees.</p>
       <fig id="tbl-rfAcc">
         <caption><p>Table 1: Random Forest algorithm optimization and
-        accuracy. All recorded sampling points grouped together before
-        being partitioned into a 70:30::training:testing
+        accuracy. All recorded sampling points were grouped together
+        before being partitioned into a 70:30::training:testing
         structure.</p></caption>
         <table-wrap>
           <table>
@@ -411,19 +414,19 @@ variables.</p>
           </table>
         </table-wrap>
       </fig>
-      <p>Confusion matrix analysis for this model showed much higher
-      producers accuracy (98.6%) compared to consumers accuracy (88.1%;
+      <p>Confusion matrix analysis for this model showed a much higher
+      producers accuracy (98.6%) than consumers accuracy (88.1%;
       <xref alt="Table 2" rid="tbl-confusion1">Table 2</xref>). While
       these results are still satisfactory, they reveal that the model
       is generally favoring dry land classification over flooded. This
-      can easily be explained by the relative abundance of dry land
-      pixels vs. flooded pixels, both in the sampling points and within
-      the FEMA training image as a whole. Qualitatively, the model
-      appeared to be overfit to stream channels (high SPI and STI), and
-      while many of the larger flood plains were effectively captured,
-      flooded features generally appeared too narrow, especially along
-      smaller tributaries. Additionally, the results were quite noisy,
-      with noticeable speckling in both the dry and flooded regions
+      can be explained by the relative abundance of dry land pixels
+      vs. flooded pixels, both in the sampling points and across the
+      landscape. Qualitatively, the model appeared to be overfit to
+      stream channels. While many of the larger flood plains were
+      effectively captured, flooded features generally appeared too
+      narrow, especially along smaller tributaries. Additionally, the
+      results were quite noisy, with noticeable speckling in both the
+      dry and flooded regions
       (<xref alt="Figure 2" rid="fig-modelCompare">Figure 2</xref>
       B).</p>
       <fig id="tbl-confusion1">
@@ -442,18 +445,18 @@ variables.</p>
       </fig>
     </sec>
     <sec id="post-processing">
-      <title>2.4.2 Post-Processing</title>
+      <title>2.5.2 Post-Processing</title>
       <p>To clean up the RF classification, and further increase its
       overall accuracy, I post-processed the classification image using
-      a two step process. Firstly, pixel “connectedness” was measured
-      (D8), with pixel groups of 20 or fewer pixels reclassified to 0
-      (dry land). This process was very effective at removing the
-      speckling, where small pockets were being incorrectly classified
-      as flooded. Secondly, all remaining flooded areas were dilated
-      using a focal maximum function using a square kernel with a 90 m
-      radius (7x7 pixel neighborhood). This both removed noise within
-      the flooded areas, and widened the flood zone along long, thin
-      features, such as tributaries
+      a two step process. Firstly, pixel “connectedness” was measured,
+      with pixel groups of 20 or fewer connected pixels (D8)
+      reclassified to 0 (dry land). This process was very effective at
+      removing the speckling, where small pockets were being incorrectly
+      classified as flooded. Secondly, all remaining flooded areas were
+      dilated using a focal maximum function using a square kernel with
+      a 90 m radius (7x7 pixel neighborhood). This both removed noise
+      within the flooded areas, and widened the flood zone along long,
+      thin features, such as tributaries
       (<xref alt="Figure 2" rid="fig-modelCompare">Figure 2</xref> C).
       This process did increase the overall rate of commission errors
       (incorrectly classifying as flooded), particularly along the banks
@@ -471,13 +474,14 @@ variables.</p>
     </sec>
   </sec>
   <sec id="scaling-up">
-    <title>2.5 Scaling up</title>
+    <title>2.6 Scaling up</title>
     <p>The chosen RF classification, with post-processing was then
     applied to the larger ATUR study area, encompassing AZ. The same
     number of sample points were used and they retained the same
     structure (i.e. dry, flooded, and training, testing), however the
     sample locations were adjusted to the larger study area. The overall
-    accuracy of the raw model output measured 86.9% (#tbl-confusion3).
+    accuracy of the raw model output measured 86.9%
+    (<xref alt="Table 4" rid="tbl-confusion3">Table 4</xref>).
     Unfortunately, while the dilated model was successful and has been
     exported from GEE, the associated accuracy assessment timed out and
     will have to be completed as a secondary process either withing GEE
@@ -492,7 +496,7 @@ variables.</p>
     </fig>
   </sec>
   <sec id="combining-data-sets">
-    <title>2.6 Combining Data Sets</title>
+    <title>2.7 Combining Data Sets</title>
     <p>Using the newly developed RF classification the FEMA flood map
     can be augmented and extended to continuous coverage of Arizona.
     Assuming that the FEMA data is the more accurate dataset, it is
@@ -500,24 +504,25 @@ variables.</p>
     Additionally, classification error maps are generated as the
     difference between the RF classification, and the FEMA
     classification. These data layers are available for use by the ATUR
-    project participants in the associated ArcGIS online (AGOL)
-    group.</p>
+    project participants in the associated
+    <ext-link ext-link-type="uri" xlink:href="https://uagis.maps.arcgis.com/home/group.html?id=f76541c22acb40e8948d9d246b8611c5#overview">ArcGIS
+    online (AGOL) group</ext-link>.</p>
   </sec>
 </sec>
 <sec id="conclusion">
   <title>3 Conclusion</title>
-  <p>A state-wide binary classification of flooded areas, given a
-  100-year flood event, has be generated through the combination of high
-  quality FEMA data, and a ML RF classification algorithm used to
+  <p>A state-wide binary classification of flooded areas, for a 100-year
+  flood event, has be generated through the combination of high quality
+  FEMA data, and a machine learning RF classification algorithm used to
   complement and extend the FEMA data. The classification was carried
   out using 7 topographic explanatory variables, achieving an overall
   accuracy of at least 86.9% (final accuracy assessment pending). These
   newly developed data layers are appropriate for use within the ATUR
-  project, for such analysis as Flood-MAR. Furthermore, I am unaware of
-  any other continuous flood map for the state of AZ, making this work
+  project, for such analysis as Flood-MAR. Further, I am unaware of any
+  other continuous flood maps for the state of AZ, making this work
   novel and potentially useful outside of the ATUR group. While
   improvements could certainly be made to this model, accuracy
-  approaching (or exceeding) 90% are laudable, and these datasets may
+  approaching (or exceeding) 90% is laudable, and these datasets may
   warrant external publication, pending approval.</p>
   <p>Full project code available on
   <ext-link ext-link-type="uri" xlink:href="https://code.earthengine.google.com/4a9b1dba779c649e0b79578d595d2ff5">GEE</ext-link>.</p>
