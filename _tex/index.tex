@@ -389,7 +389,7 @@ Decision Tree), Random Forest (RF), and Support Vector Machine (SVM).
 Generally, CART classification produced very noisy results which tended
 to overestimate flood waters, and averaged around 79.5\% accuracy (data
 not shown). SVM classification was too computationally demanding, even
-within the smaller study area of the San Pedro, and with the generous
+within the smaller study area of the San Pedro, and given the generous
 cloud computing resources of GEE. As a consequence SVM classification
 can not be evaluated, other than to say that it is inefficient and
 implementation is impractical. RF classification proved to be the most
@@ -409,8 +409,8 @@ refers to the most accurate model, using the fewest number of trees.
 Tested RF models ranged from 73.9\% to 87.4\% (Table~\ref{tbl-rfAcc}).
 The most accurate model tested used 35,000 sampling points, consisting
 of 30,000 dry land points (not flooded) and 5,000 flooded points and
-with all explanatory variables except for TRI, achieving an 87.4\%
-overall accuracy.
+with all explanatory variables except for TRI, achieving a peak overall
+accuracy of 87.4\% at 70 trees.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3023}}
@@ -474,17 +474,18 @@ they reveal that the model is generally favoring dry land classification
 over flooded. This can easily be explained by the relative abundance of
 dry land pixels vs.~flooded pixels, both in the sampling points and
 within the FEMA training image as a whole. Qualitatively, the model
-appeared to be somewhat overfit to stream channels (high SPI and STI),
-and while many of the larger flood plains were effectively captured,
-many features appeared too narrow. Additionally, the results were
-somewhat noisy, with noticeable speckling in both the dry and flooded
-regions.
+appeared to be overfit to stream channels (high SPI and STI), and while
+many of the larger flood plains were effectively captured, flooded
+features generally appeared too narrow, especially along smaller
+tributaries. Additionally, the results were quite noisy, with noticeable
+speckling in both the dry and flooded regions
+(Figure~\ref{fig-modelCompare} B).
 
 \begin{table}
 
-\caption{\label{tbl-confusion1}The confusion for the most accurate
-random forest classifier, including overall, producer's and consumer's
-accuracy.}
+\caption{\label{tbl-confusion1}The confusion matrix for the most
+accurate random forest classifier of the San Pedro watershed, including
+overall, producer's and consumer's accuracy.}
 
 \centering{
 
@@ -494,7 +495,111 @@ accuracy.}
 
 \end{table}%
 
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{images/SanPedro_modelCompare.png}}
+
+}
+
+\caption{\label{fig-modelCompare}Side-by-side comparison of FEMA
+100-year flood maps (A), raw random forest classification (B),
+post-processed random forest classification (C), and classification
+errors of the post-processed classification (D) for the lower San Pedro
+watershed.}
+
+\end{figure}%
+
+\subsubsection{Post-Processing}\label{post-processing}
+
+To clean up the RF classification, and further increase its overall
+accuracy, I post-processed the classification image using a two step
+process. Firstly, pixel ``connectedness'' was measured (D8), with pixel
+groups of 20 or fewer pixels reclassified to 0 (dry land). This process
+was very effective at removing the speckling, where small pockets were
+being incorrectly classified as flooded. Secondly, all remaining flooded
+areas were dilated using a focal maximum function using a square kernel
+with a 90 m radius (7x7 pixel neighborhood). This both removed noise
+within the flooded areas, and widened the flood zone along long, thin
+features, such as tributaries (Figure~\ref{fig-modelCompare} C). This
+process did increase the overall rate of commission errors (incorrectly
+classifying as flooded), particularly along the banks of major
+floodplains, however the decreased rate of omission errors (incorrectly
+classifying as not flooded) more than made up for this fact, and the
+overall accuracy increased to 90.5\% (Figure~\ref{fig-modelCompare} D;
+Table~\ref{tbl-confusion2})
+
+\begin{table}
+
+\caption{\label{tbl-confusion2}The confusion matrix for the
+post-processed random forest classifier of the San Pedro watershed,
+including overall, producer's and consumer's accuracy.}
+
+\centering{
+
+\includegraphics[width=4.3in,height=1.3in]{images/Confusion2.png}
+
+}
+
+\end{table}%
+
+\subsection{Scaling up}\label{scaling-up}
+
+The chosen RF classification, with post-processing was then applied to
+the larger ATUR study area, encompassing AZ. The same number of sample
+points were used and they retained the same structure (i.e.~dry,
+flooded, and training, testing), however the sample locations were
+adjusted to the larger study area. The overall accuracy of the raw model
+output measured 86.9\% (\#tbl-confusion3). Unfortunately, while the
+dilated model was successful and has been exported from GEE, the
+associated accuracy assessment timed out and will have to be completed
+as a secondary process either withing GEE or using external software.
+Final accuracy assessment of the dilated model is pending.
+
+\begin{table}
+
+\caption{\label{tbl-confusion3}The confusion matrix for the random
+forest classifier of the full ATUR study area, encompassing Arizona,
+including overall, producer's and consumer's accuracy.}
+
+\centering{
+
+\includegraphics[width=4.3in,height=1.3in]{images/Confusion3.png}
+
+}
+
+\end{table}%
+
+\subsection{Combining Data Sets}\label{combining-data-sets}
+
+Using the newly developed RF classification the FEMA flood map can be
+augmented and extended to continuous coverage of Arizona. Assuming that
+the FEMA data is the more accurate dataset, it is given priority. The RF
+data is then used where no FEMA data exists. Additionally,
+classification error maps are generated as the difference between the RF
+classification, and the FEMA classification. These data layers are
+available for use by the ATUR project participants in the associated
+ArcGIS online (AGOL) group.
+
 \section{Conclusion}\label{conclusion}
+
+A state-wide binary classification of flooded areas, given a 100-year
+flood event, has be generated through the combination of high quality
+FEMA data, and a ML RF classification algorithm used to complement and
+extend the FEMA data. The classification was carried out using 7
+topographic explanatory variables, achieving an overall accuracy of at
+least 86.9\% (final accuracy assessment pending). These newly developed
+data layers are appropriate for use within the ATUR project, for such
+analysis as Flood-MAR. Furthermore, I am unaware of any other continuous
+flood map for the state of AZ, making this work novel and potentially
+useful outside of the ATUR group. While improvements could certainly be
+made to this model, accuracy approaching (or exceeding) 90\% are
+laudable, and these datasets may warrant external publication, pending
+approval.
+
+Full project code available on
+\href{https://code.earthengine.google.com/4a9b1dba779c649e0b79578d595d2ff5}{GEE}.
 
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
