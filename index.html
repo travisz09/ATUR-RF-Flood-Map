@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Travis Zalesky">
-<meta name="dcterms.date" content="2025-04-01">
+<meta name="dcterms.date" content="2025-04-02">
 <meta name="keywords" content="Arizona, Flood, Federal Emergency Management Administration, Random Forest, Machine Learning">
 
 <title>Arizona Random Forest Flood Mapping</title>
@@ -102,14 +102,15 @@ window.Quarto = {
 ">
 <meta name="citation_keywords" content="Arizona,Flood,Federal Emergency Management Administration,Random Forest,Machine Learning">
 <meta name="citation_author" content="Travis Zalesky">
-<meta name="citation_publication_date" content="2025-04-01">
-<meta name="citation_cover_date" content="2025-04-01">
+<meta name="citation_publication_date" content="2025-04-02">
+<meta name="citation_cover_date" content="2025-04-02">
 <meta name="citation_year" content="2025">
-<meta name="citation_online_date" content="2025-04-01">
+<meta name="citation_online_date" content="2025-04-02">
 <meta name="citation_language" content="en">
 <meta name="citation_reference" content="citation_title=Identifying the essential flood conditioning factors for flood prone area mapping using machine learning techniques;,citation_author=Mahyat Shafapour Tehrany;,citation_author=Simon Jones;,citation_author=Farzin Shabani;,citation_publication_date=2019-04;,citation_cover_date=2019-04;,citation_year=2019;,citation_doi=10.1016/j.catena.2018.12.011;,citation_issn=0341-8162;,citation_volume=175;,citation_journal_title=CATENA;">
 <meta name="citation_reference" content="citation_title=Identifying suitable zones for integrated aquifer recharge and flood control in arid qatar using GIS-based multi-criteria decision-making;,citation_author=Sarra Aloui;,citation_author=Adel Zghibi;,citation_author=Annamaria Mazzoni;,citation_author=Adel Elomri;,citation_author=Tareq Al-Ansari;,citation_publication_date=2024-05;,citation_cover_date=2024-05;,citation_year=2024;,citation_doi=10.1016/j.gsd.2024.101137;,citation_issn=2352-801X;,citation_volume=25;">
 <meta name="citation_reference" content="citation_title=Flood hazard mapping methods: A review;,citation_author=Rofiat Bunmi Mudashiru;,citation_author=Nuridah Sabtu;,citation_author=Ismail Abustan;,citation_author=Waheed Balogun;,citation_publication_date=2021-12;,citation_cover_date=2021-12;,citation_year=2021;,citation_doi=10.1016/j.jhydrol.2021.126846;,citation_issn=0022-1694;,citation_volume=603;,citation_journal_title=Journal of Hydrology;">
+<meta name="citation_reference" content="citation_title=Chapter F2.2: Accuracy assessment: Quantifying classification quality;,citation_author=Andréa Puzzi Nicolau;,citation_author=Karen Dyson;,citation_author=David Saah;,citation_author=Nicholas Clinton;,citation_editor=Jeffrey A. Cardille;,citation_editor=Nick Clinton;,citation_editor=Morgan A Crowley;,citation_editor=David Saah;,citation_publication_date=2023-05;,citation_cover_date=2023-05;,citation_year=2023;,citation_fulltext_html_url=https://docs.google.com/document/d/1UCB900oCdJERca-2WUeDlCu52MjPKJxETJ_jJcLM0bM/edit?tab=t.0;,citation_isbn=978-3-031-26587-7;,citation_inbook_title=Cloud-based remote sensing with google earth engine: Fundamentals and applications;">
 </head>
 
 <body class="quarto-light">
@@ -143,7 +144,7 @@ window.Quarto = {
                 <div>
             <div class="quarto-title-meta-heading">Published</div>
             <div class="quarto-title-meta-contents">
-              <p class="date">April 1, 2025</p>
+              <p class="date">April 2, 2025</p>
             </div>
           </div>
           
@@ -177,7 +178,13 @@ window.Quarto = {
    
   <ul>
   <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background"><span class="header-section-number">1</span> Background</a></li>
-  <li><a href="#sec-data-methods" id="toc-sec-data-methods" class="nav-link" data-scroll-target="#sec-data-methods"><span class="header-section-number">2</span> Data &amp; Methods</a></li>
+  <li><a href="#sec-data-methods" id="toc-sec-data-methods" class="nav-link" data-scroll-target="#sec-data-methods"><span class="header-section-number">2</span> Data &amp; Methods</a>
+  <ul class="collapse">
+  <li><a href="#topography-data" id="toc-topography-data" class="nav-link" data-scroll-target="#topography-data"><span class="header-section-number">2.1</span> Topography Data</a></li>
+  <li><a href="#flooding-data" id="toc-flooding-data" class="nav-link" data-scroll-target="#flooding-data"><span class="header-section-number">2.2</span> Flooding Data</a></li>
+  <li><a href="#variable-collinearity" id="toc-variable-collinearity" class="nav-link" data-scroll-target="#variable-collinearity"><span class="header-section-number">2.3</span> Variable Collinearity</a></li>
+  <li><a href="#initial-model-testing-and-development" id="toc-initial-model-testing-and-development" class="nav-link" data-scroll-target="#initial-model-testing-and-development"><span class="header-section-number">2.4</span> Initial Model Testing and Development</a></li>
+  </ul></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">3</span> Conclusion</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   
@@ -202,6 +209,8 @@ window.Quarto = {
 </section>
 <section id="sec-data-methods" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="sec-data-methods"><span class="header-section-number">2</span> Data &amp; Methods</h2>
+<section id="topography-data" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="topography-data"><span class="header-section-number">2.1</span> Topography Data</h3>
 <p>All explanatory variables for the model were derived from the NASA Shuttle Radar Topography Mission (SRTM) 30-m DEM. Slope, aspect, curvature, stream power index (SPI), topographic wetness index (TWI), and sediment transport index (STI) were all calculated in ArcGIS Pro (3.4.3). Slope, aspect and curvature were calculated using the Surface Parameters tool (Spatial Analyst). SPI, TWI, and STI were calculated as per <span class="citation" data-cites="Tehrany_Jones_Shabani_2019">Tehrany et al. (<a href="#ref-Tehrany_Jones_Shabani_2019" role="doc-biblioref">2019</a>)</span> using the Raster Calculator according to Equations <a href="#eq-spi" class="quarto-xref">1</a>-<a href="#eq-sti" class="quarto-xref">3</a></p>
 <p><span id="eq-spi"><span class="math display">\[
 SPI = A_s * tan(ß)
@@ -218,19 +227,187 @@ STI = (A_s / 22.13)^{0.6} * (sin(ß)/0.0896)^{1.3}
 TRI = \left[ \sum (χ_{ij} - χ_{00})^2 \right] ^{0.5}
 \tag{4}\]</span></span></p>
 <p>where χ<sub>ij</sub> is the elevation at coordinates (i, j) and χ<sub>00</sub> is the elevation at coordinates (0, 0) for a 3x3 focal neighborhood. The code used to calculate TRI is available on <a href="https://github.com/travisz09/TopographicRoughnessIndex">GitHub</a>.</p>
+</section>
+<section id="flooding-data" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="flooding-data"><span class="header-section-number">2.2</span> Flooding Data</h3>
 <p>Flood data used for training the model was obtained from the Federal Emergency Management Administration (FEMA) National Flood Hazards Layer, which provides 100-year flood maps for many areas of the US. The data was manually downloaded for each county in AZ from the FEMA <a href="https://hazards-fema.maps.arcgis.com/apps/webappviewer/index.html?id=8b0adb51996444d4879338b5529aa9cd">data viewer</a> (accessed 3/15/2025). Data layers were merged in ArcGIS Pro (3.4.3), and the vector data was converted to a raster with a 10 m resolution. Additionally, the FEMA data was reclassified to a binary output, either flooded or not flooded (during a 100-year flood event), eliminating details such as survey methods and flow depth.</p>
+</section>
+<section id="variable-collinearity" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="variable-collinearity"><span class="header-section-number">2.3</span> Variable Collinearity</h3>
 <p>The machine learning model was performed in Google Earth Engine (GEE). The SRTM elevation data was access and clipped to the study area natively through GEE servers, all other data layers, including the study area shapefile, were uploaded as an asset to GEE prior to model implementation.</p>
-<p>Prior to modeling, the collinearity of the explanatory variables was explored using a series of pair-wise linear regression plots shown in Figures <a href="#appfig-floodElev" class="quarto-xref">A1</a>-<a href="#appfig-triSti" class="quarto-xref">A36</a>. For collinearity analysis 5,000 points were randomly sampled across the study area, the maximum number of points which can be plotted in GEE. The collinearity of each pair-wise regression is summarized visually in <a href="#fig-Rsquared" class="quarto-xref">Figure&nbsp;1</a> using the R-squared statistic of each comparison.</p>
+<p>Prior to modeling, the collinearity of the explanatory variables was explored using a series of pair-wise linear regression plots shown in Figures <a href="#appfig-floodElev" class="quarto-xref">A1</a>-<a href="#appfig-triSti" class="quarto-xref">A36</a>. For collinearity analysis 5,000 points (the maximum number of points which can be plotted in GEE) were randomly sampled across the study area . The collinearity of each pair-wise regression is summarized visually in <a href="#fig-Rsquared" class="quarto-xref">Figure&nbsp;1</a> using the R-squared statistic of each comparison. While some relationships, e.g.&nbsp;slope and TWI, share a complex relationship that is not captured by a linear regression, the R-squared statistic is a simple indicator of collinearity which is readily understood. Although a formal variance inflation factor (VIF) analysis was not performed, efforts were made to limit model complexity by manually testing variable combinations, especially those that showed high degrees of collinearity, and at equivalent model accuracy, simpler models were preferred.</p>
 <div id="fig-Rsquared" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-Rsquared-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/CorrelationMatrix.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Color coded R-squared statistic for each pair-wise linear regression (green = high, red = low), representing the collinearity of each variable used for modeling."><img src="images/CorrelationMatrix.png" class="img-fluid figure-img"></a>
+<a href="images/CorrelationMatrix.PNG" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Color coded R-squared statistic for each pair-wise linear regression (green = high, red = low), representing the collinearity of each variable used for modeling."><img src="images/CorrelationMatrix.PNG" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-Rsquared-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Color coded R-squared statistic for each pair-wise linear regression (green = high, red = low), representing the collinearity of each variable used for modeling.
 </figcaption>
 </figure>
 </div>
+</section>
+<section id="initial-model-testing-and-development" class="level3" data-number="2.4">
+<h3 data-number="2.4" class="anchored" data-anchor-id="initial-model-testing-and-development"><span class="header-section-number">2.4</span> Initial Model Testing and Development</h3>
+<p>Many models were iteratively explored using several machine learning algorithms, various combinations of explanatory variables, and many hyperparameterization values. For all initial model trials the study area was reduced to the San Pedro watershed, a well characterized watershed with approx. 66% FEMA flood map coverage (visual estimate). A 70:30::training:testing data structure was adopted, and while a range of sampled points were tested, this ratio was maintained throughout. Model performance was primarily assessed through an overall accuracy score, with confusion matrix analysis performed for highly accurate models.</p>
+<p>Tested models included Classification and Regression Tree (CART, a.k.a Decision Tree), Random Forest (RF), and Support Vector Machine (SVM). Generally, CART classification produced very noisy results which tended to overestimate flood waters, and averaged around 79.5% accuracy (data not shown). SVM classification was too computationally demanding, even within the smaller study area of the San Pedro, and with the generous cloud computing resources of GEE. As a consequence SVM classification can not be evaluated, other than to say that it is inefficient and implementation is impractical. RF classification proved to be the most promising method of classification, and the most effort was spent on developing that model.</p>
+<section id="random-forest-model-development" class="level4" data-number="2.4.1">
+<h4 data-number="2.4.1" class="anchored" data-anchor-id="random-forest-model-development"><span class="header-section-number">2.4.1</span> Random Forest Model Development</h4>
+<p>Over 400 RF models were tested for the San Pedro watershed. Model optimization parameters tested included the number of trees, the number of sampling points (from 20,000 up to 60,000), and combinations of explanatory variables. Many RF models were tested simultaneously with between 5 to 100 trees using a custom GEE function modified from <span class="citation" data-cites="EEFA_F2.2">Nicolau et al. (<a href="#ref-EEFA_F2.2" role="doc-biblioref">2023</a>)</span>. The referenced accuracy scores for preliminary models refers to the most accurate model, using the fewest number of trees. Tested RF models ranged from 73.9% to 87.4% (<a href="#tbl-rfAcc" class="quarto-xref">Table&nbsp;1</a>). The most accurate model tested used 35,000 sampling points, consisting of 30,000 dry land points (not flooded) and 5,000 flooded points and with all explanatory variables except for TRI, achieving an 87.4% overall accuracy.</p>
+<div id="tbl-rfAcc" class="striped quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-rfAcc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Random Forest algorithm optimization and accuracy. All recorded sampling points grouped together before being partitioned into a 70:30::training:testing structure.
+</figcaption>
+<div aria-describedby="tbl-rfAcc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 30%">
+<col style="width: 11%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variables</th>
+<th>Sampling Points (dry land, flooded)</th>
+<th>Trees</th>
+<th>Accuracy (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>All</td>
+<td>15000, 5000</td>
+<td>50</td>
+<td>79.2</td>
+</tr>
+<tr class="even">
+<td>All</td>
+<td>20000, 5000</td>
+<td>85</td>
+<td>82</td>
+</tr>
+<tr class="odd">
+<td>All</td>
+<td>20000, 10000</td>
+<td>85</td>
+<td>73.9</td>
+</tr>
+<tr class="even">
+<td>All</td>
+<td>25000, 5000</td>
+<td>50</td>
+<td>84.8</td>
+</tr>
+<tr class="odd">
+<td>All</td>
+<td>30000, 5000</td>
+<td>45</td>
+<td>87</td>
+</tr>
+<tr class="even">
+<td>All</td>
+<td>30000, 10000</td>
+<td>80</td>
+<td>78.9</td>
+</tr>
+<tr class="odd">
+<td>All</td>
+<td>40000, 10000</td>
+<td>50</td>
+<td>82.1</td>
+</tr>
+<tr class="even">
+<td>All</td>
+<td>50000, 10000</td>
+<td></td>
+<td>Error</td>
+</tr>
+<tr class="odd">
+<td>No TRI</td>
+<td>25000, 5000</td>
+<td>90</td>
+<td>84.9</td>
+</tr>
+<tr class="even">
+<td>No slope</td>
+<td>25000, 5000</td>
+<td>70</td>
+<td>84.8</td>
+</tr>
+<tr class="odd">
+<td>No TRI</td>
+<td>30000, 5000</td>
+<td>70</td>
+<td>87.4</td>
+</tr>
+<tr class="even">
+<td>No TRI or STI</td>
+<td>30000, 5000</td>
+<td>40</td>
+<td>87.2</td>
+</tr>
+<tr class="odd">
+<td>No STI</td>
+<td>30000, 5000</td>
+<td>??</td>
+<td>87.1</td>
+</tr>
+<tr class="even">
+<td>No elev</td>
+<td>30000, 5000</td>
+<td>90</td>
+<td>86.3</td>
+</tr>
+<tr class="odd">
+<td>No slope</td>
+<td>30000, 5000</td>
+<td>80</td>
+<td>87.2</td>
+</tr>
+<tr class="even">
+<td>No aspec</td>
+<td>30000, 5000</td>
+<td>60</td>
+<td>87</td>
+</tr>
+<tr class="odd">
+<td>No curve</td>
+<td>30000, 5000</td>
+<td>40</td>
+<td>87.1</td>
+</tr>
+<tr class="even">
+<td>No SPI</td>
+<td>30000, 5000</td>
+<td>70</td>
+<td>87.1</td>
+</tr>
+<tr class="odd">
+<td>No TWI</td>
+<td>30000, 5000</td>
+<td>40</td>
+<td>87.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Confusion matrix analysis for this model showed much higher producers accuracy (98.6%) compared to consumers accuracy (88.1%; <a href="#tbl-confusion1" class="quarto-xref">Table&nbsp;2</a>). While these results are still satisfactory, they reveal that the model is generally favoring dry land classification over flooded. This can easily be explained by the relative abundance of dry land pixels vs.&nbsp;flooded pixels, both in the sampling points and within the FEMA training image as a whole. Qualitatively, the model appeared to be somewhat overfit to stream channels (high SPI and STI), and while many of the larger flood plains were effectively captured, many features appeared too narrow. Additionally, the results were somewhat noisy, with noticeable speckling in both the dry and flooded regions.</p>
+<div id="tbl-confusion1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-confusion1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: The confusion for the most accurate random forest classifier, including overall, producer’s and consumer’s accuracy.
+</figcaption>
+<div aria-describedby="tbl-confusion1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/Confusion1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Table&nbsp;2: The confusion for the most accurate random forest classifier, including overall, producer’s and consumer’s accuracy."><img src="images/Confusion1.png" style="width:4.3in;height:1.3in" class="figure-img"></a>
+</div>
+</figure>
+</div>
+</section>
+</section>
 </section>
 <section id="conclusion" class="level2" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="conclusion"><span class="header-section-number">3</span> Conclusion</h2>
@@ -244,6 +421,9 @@ Aloui, S., Zghibi, A., Mazzoni, A., Elomri, A., &amp; Al-Ansari, T. (2024). <em>
 <div id="ref-Mudashiru_Sabtu_Abustan_Balogun_2021" class="csl-entry" role="listitem">
 Mudashiru, R. B., Sabtu, N., Abustan, I., &amp; Balogun, W. (2021). Flood hazard mapping methods: A review. <em>Journal of Hydrology</em>, <em>603</em>, 126846. <a href="https://doi.org/10.1016/j.jhydrol.2021.126846">https://doi.org/10.1016/j.jhydrol.2021.126846</a>
 </div>
+<div id="ref-EEFA_F2.2" class="csl-entry" role="listitem">
+Nicolau, A. P., Dyson, K., Saah, D., &amp; Clinton, N. (2023). Chapter F2.2: Accuracy assessment: Quantifying classification quality. In J. A. Cardille, N. Clinton, M. A. Crowley, &amp; D. Saah (Eds.), <em>Cloud-based remote sensing with google earth engine: Fundamentals and applications</em> (1st ed.). Springer Cham. <a href="https://docs.google.com/document/d/1UCB900oCdJERca-2WUeDlCu52MjPKJxETJ_jJcLM0bM/edit?tab=t.0">https://docs.google.com/document/d/1UCB900oCdJERca-2WUeDlCu52MjPKJxETJ_jJcLM0bM/edit?tab=t.0</a>
+</div>
 <div id="ref-Tehrany_Jones_Shabani_2019" class="csl-entry" role="listitem">
 Tehrany, M. S., Jones, S., &amp; Shabani, F. (2019). Identifying the essential flood conditioning factors for flood prone area mapping using machine learning techniques. <em>CATENA</em>, <em>175</em>, 174–192. <a href="https://doi.org/10.1016/j.catena.2018.12.011">https://doi.org/10.1016/j.catena.2018.12.011</a>
 </div>
@@ -253,11 +433,12 @@ Tehrany, M. S., Jones, S., &amp; Shabani, F. (2019). Identifying the essential f
 
 <div id="quarto-appendix" class="default"><section id="appendix" class="level2 appendix" data-number="4"><h2 class="anchored quarto-appendix-heading"><span class="header-section-number">4</span> Appendix</h2><div class="quarto-appendix-contents">
 
+<p>Code used to render these plots, as well as interactive versions of these plots are available on <a href="https://code.earthengine.google.com/5d33d4d4b06092127e3e3c5233878ef3">GEE</a>.</p>
 <p><strong>Flooding</strong></p>
 <div id="appfig-floodElev" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-floodElev-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/flood-elev.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="A1: Linear regression analysis of flood risk (binary) and elevation (m) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-elev.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/flood-elev.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="A1: Linear regression analysis of flood risk (binary) and elevation (m) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-elev.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-floodElev-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A1: Linear regression analysis of flood risk (binary) and elevation (m) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -267,7 +448,7 @@ A1: Linear regression analysis of flood risk (binary) and elevation (m) for 5,00
 <div id="appfig-floodSlope" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-floodSlope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/flood-slope.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="A2: Linear regression analysis of flood risk (binary) and slope (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-slope.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/flood-slope.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="A2: Linear regression analysis of flood risk (binary) and slope (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-slope.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-floodSlope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A2: Linear regression analysis of flood risk (binary) and slope (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -277,7 +458,7 @@ A2: Linear regression analysis of flood risk (binary) and slope (°) for 5,000 r
 <div id="appfig-floodAspect" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-floodAspect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/flood-aspect.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="A3: Linear regression analysis of flood risk (binary) and aspect (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-aspect.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/flood-aspect.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="A3: Linear regression analysis of flood risk (binary) and aspect (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-aspect.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-floodAspect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A3: Linear regression analysis of flood risk (binary) and aspect (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -287,7 +468,7 @@ A3: Linear regression analysis of flood risk (binary) and aspect (°) for 5,000 
 <div id="appfig-floodCurve" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-floodCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/flood-curve.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="A4: Linear regression analysis of flood risk (binary) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-curve.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/flood-curve.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="A4: Linear regression analysis of flood risk (binary) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-curve.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-floodCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A4: Linear regression analysis of flood risk (binary) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -297,7 +478,7 @@ A4: Linear regression analysis of flood risk (binary) and curvature for 5,000 ra
 <div id="appfig-floodSpi" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-floodSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/flood-spi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="A5: Linear regression analysis of flood risk (binary) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-spi.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/flood-spi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="A5: Linear regression analysis of flood risk (binary) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-spi.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-floodSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A5: Linear regression analysis of flood risk (binary) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -307,7 +488,7 @@ A5: Linear regression analysis of flood risk (binary) and stream power index (SP
 <div id="appfig-floodTwi" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-floodTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/flood-twi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="A6: Linear regression analysis of flood risk (binary) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-twi.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/flood-twi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="A6: Linear regression analysis of flood risk (binary) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-twi.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-floodTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A6: Linear regression analysis of flood risk (binary) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -317,7 +498,7 @@ A6: Linear regression analysis of flood risk (binary) and topographic wetness in
 <div id="appfig-floodTri" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-floodTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/flood-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="A7: Linear regression analysis of flood risk (binary) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-tri.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/flood-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="A7: Linear regression analysis of flood risk (binary) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-tri.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-floodTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A7: Linear regression analysis of flood risk (binary) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -327,7 +508,7 @@ A7: Linear regression analysis of flood risk (binary) and topographic roughness 
 <div id="appfig-floodSti" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-floodSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/flood-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="A8: Linear regression analysis of flood risk (binary) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-sti.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/flood-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="A8: Linear regression analysis of flood risk (binary) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/flood-sti.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-floodSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A8: Linear regression analysis of flood risk (binary) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -338,7 +519,7 @@ A8: Linear regression analysis of flood risk (binary) and sediment transport ind
 <div id="appfig-elevSlope" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-elevSlope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/elev-slope.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="A9: Linear regression analysis of elevation (m) and slope (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-slope.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/elev-slope.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="A9: Linear regression analysis of elevation (m) and slope (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-slope.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-elevSlope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A9: Linear regression analysis of elevation (m) and slope (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -348,7 +529,7 @@ A9: Linear regression analysis of elevation (m) and slope (°) for 5,000 randoml
 <div id="appfig-elevAspect" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-elevAspect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/elev-aspect.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="A10: Linear regression analysis of elevation (m) and aspect (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-aspect.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/elev-aspect.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="A10: Linear regression analysis of elevation (m) and aspect (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-aspect.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-elevAspect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A10: Linear regression analysis of elevation (m) and aspect (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -358,7 +539,7 @@ A10: Linear regression analysis of elevation (m) and aspect (°) for 5,000 rando
 <div id="appfig-elevCurve" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-elevCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/elev-curve.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="A11: Linear regression analysis of elevation (m) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-curve.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/elev-curve.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="A11: Linear regression analysis of elevation (m) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-curve.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-elevCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A11: Linear regression analysis of elevation (m) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -368,7 +549,7 @@ A11: Linear regression analysis of elevation (m) and curvature for 5,000 randoml
 <div id="appfig-elevSpi" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-elevSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/elev-spi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="A12: Linear regression analysis of elevation (m) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-spi.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/elev-spi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" title="A12: Linear regression analysis of elevation (m) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-spi.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-elevSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A12: Linear regression analysis of elevation (m) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -378,7 +559,7 @@ A12: Linear regression analysis of elevation (m) and stream power index (SPI) fo
 <div id="appfig-elevTwi" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-elevTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/elev-twi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" title="A13: Linear regression analysis of elevation (m) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-twi.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/elev-twi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="A13: Linear regression analysis of elevation (m) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-twi.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-elevTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A13: Linear regression analysis of elevation (m) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -388,7 +569,7 @@ A13: Linear regression analysis of elevation (m) and topographic wetness index (
 <div id="appfig-elevTri" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-elevTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/elev-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="A14: Linear regression analysis of elevation (m) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-tri.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/elev-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="A14: Linear regression analysis of elevation (m) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-tri.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-elevTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A14: Linear regression analysis of elevation (m) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -398,7 +579,7 @@ A14: Linear regression analysis of elevation (m) and topographic roughness index
 <div id="appfig-elevSti" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-elevSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/elev-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="A15: Linear regression analysis of elevation (m) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-sti.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/elev-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="A15: Linear regression analysis of elevation (m) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/elev-sti.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-elevSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A15: Linear regression analysis of elevation (m) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -409,7 +590,7 @@ A15: Linear regression analysis of elevation (m) and sediment transport index (S
 <div id="appfig-slopeAspect" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-slopeAspect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/slope-aspect.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="A16: Linear regression analysis of slope (°) and aspect (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/slope-aspect.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/slope-aspect.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18" title="A16: Linear regression analysis of slope (°) and aspect (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/slope-aspect.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-slopeAspect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A16: Linear regression analysis of slope (°) and aspect (°) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -419,7 +600,7 @@ A16: Linear regression analysis of slope (°) and aspect (°) for 5,000 randomly
 <div id="appfig-slopeCurve" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-slopeCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/slope-curve.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18" title="A17: Linear regression analysis of slope (°) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/slope-curve.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/slope-curve.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19" title="A17: Linear regression analysis of slope (°) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/slope-curve.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-slopeCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A17: Linear regression analysis of slope (°) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -429,7 +610,7 @@ A17: Linear regression analysis of slope (°) and curvature for 5,000 randomly s
 <div id="appfig-slopeSpi" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-slopeSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/slope-spi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19" title="A18: Linear regression analysis of slope (°) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/slope-spi.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/slope-spi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20" title="A18: Linear regression analysis of slope (°) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/slope-spi.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-slopeSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A18: Linear regression analysis of slope (°) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -439,7 +620,7 @@ A18: Linear regression analysis of slope (°) and stream power index (SPI) for 5
 <div id="appfig-slopeTwi" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-slopeTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/slope-twi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20" title="A19: Linear regression analysis of slope (°) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/slope-twi.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/slope-twi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21" title="A19: Linear regression analysis of slope (°) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/slope-twi.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-slopeTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A19: Linear regression analysis of slope (°) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -449,7 +630,7 @@ A19: Linear regression analysis of slope (°) and topographic wetness index (TWI
 <div id="appfig-slopeTri" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-slopeTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/slope-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21" title="A20: Linear regression analysis of slope (°) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/slope-tri.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/slope-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-22" title="A20: Linear regression analysis of slope (°) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/slope-tri.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-slopeTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A20: Linear regression analysis of slope (°) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -459,7 +640,7 @@ A20: Linear regression analysis of slope (°) and topographic roughness index (T
 <div id="appfig-slopeSti" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-slopeSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/slope-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-22" title="A21: Linear regression analysis of slope (°) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/slope-sti.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/slope-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-23" title="A21: Linear regression analysis of slope (°) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/slope-sti.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-slopeSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A21: Linear regression analysis of slope (°) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -470,7 +651,7 @@ A21: Linear regression analysis of slope (°) and sediment transport index (STI)
 <div id="appfig-aspectCurve" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-aspectCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/aspect-curve.png" class="lightbox" data-gallery="quarto-lightbox-gallery-23" title="A22: Linear regression analysis of aspect (°) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/aspect-curve.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/aspect-curve.png" class="lightbox" data-gallery="quarto-lightbox-gallery-24" title="A22: Linear regression analysis of aspect (°) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/aspect-curve.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-aspectCurve-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A22: Linear regression analysis of aspect (°) and curvature for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -480,7 +661,7 @@ A22: Linear regression analysis of aspect (°) and curvature for 5,000 randomly 
 <div id="appfig-aspectSpi" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-aspectSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/aspect-spi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-24" title="A23: Linear regression analysis of aspect (°) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/aspect-spi.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/aspect-spi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-25" title="A23: Linear regression analysis of aspect (°) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/aspect-spi.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-aspectSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A23: Linear regression analysis of aspect (°) and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -490,7 +671,7 @@ A23: Linear regression analysis of aspect (°) and stream power index (SPI) for 
 <div id="appfig-aspectTwi" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-aspectTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/aspect-twi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-25" title="A24: Linear regression analysis of aspect (°) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/aspect-twi.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/aspect-twi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-26" title="A24: Linear regression analysis of aspect (°) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/aspect-twi.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-aspectTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A24: Linear regression analysis of aspect (°) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -500,7 +681,7 @@ A24: Linear regression analysis of aspect (°) and topographic wetness index (TW
 <div id="appfig-aspectTri" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-aspectTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/aspect-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-26" title="A25: Linear regression analysis of aspect (°) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/aspect-tri.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/aspect-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-27" title="A25: Linear regression analysis of aspect (°) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/aspect-tri.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-aspectTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A25: Linear regression analysis of aspect (°) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -510,7 +691,7 @@ A25: Linear regression analysis of aspect (°) and topographic roughness index (
 <div id="appfig-aspectSti" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-aspectSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/aspect-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-27" title="A26: Linear regression analysis of aspect (°) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/aspect-sti.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/aspect-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-28" title="A26: Linear regression analysis of aspect (°) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/aspect-sti.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-aspectSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A26: Linear regression analysis of aspect (°) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -521,7 +702,7 @@ A26: Linear regression analysis of aspect (°) and sediment transport index (STI
 <div id="appfig-curveSpi" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-curveSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/curve-spi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-28" title="A27: Linear regression analysis of curvature and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/curve-spi.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/curve-spi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-29" title="A27: Linear regression analysis of curvature and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/curve-spi.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-curveSpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A27: Linear regression analysis of curvature and stream power index (SPI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -531,7 +712,7 @@ A27: Linear regression analysis of curvature and stream power index (SPI) for 5,
 <div id="appfig-curveTwi" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-curveTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/curve-twi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-29" title="A28: Linear regression analysis of curvature and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/curve-twi.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/curve-twi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-30" title="A28: Linear regression analysis of curvature and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/curve-twi.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-curveTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A28: Linear regression analysis of curvature and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -541,7 +722,7 @@ A28: Linear regression analysis of curvature and topographic wetness index (TWI)
 <div id="appfig-curveTri" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-curveTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/curve-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-30" title="A29: Linear regression analysis of curvature and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/curve-tri.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/curve-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-31" title="A29: Linear regression analysis of curvature and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/curve-tri.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-curveTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A29: Linear regression analysis of curvature and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -551,7 +732,7 @@ A29: Linear regression analysis of curvature and topographic roughness index (TR
 <div id="appfig-curveSti" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-curveSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/curve-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-31" title="A30: Linear regression analysis of curvature and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/curve-sti.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/curve-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-32" title="A30: Linear regression analysis of curvature and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/curve-sti.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-curveSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A30: Linear regression analysis of curvature and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -562,7 +743,7 @@ A30: Linear regression analysis of curvature and sediment transport index (STI) 
 <div id="appfig-spiTwi" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-spiTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/spi-twi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-32" title="A31: Linear regression analysis of stream power index (SPI) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/spi-twi.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/spi-twi.png" class="lightbox" data-gallery="quarto-lightbox-gallery-33" title="A31: Linear regression analysis of stream power index (SPI) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/spi-twi.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-spiTwi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A31: Linear regression analysis of stream power index (SPI) and topographic wetness index (TWI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -572,7 +753,7 @@ A31: Linear regression analysis of stream power index (SPI) and topographic wetn
 <div id="appfig-spiTri" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-spiTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/spi-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-33" title="A32: Linear regression analysis of stream power index (SPI) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/spi-tri.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/spi-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-34" title="A32: Linear regression analysis of stream power index (SPI) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/spi-tri.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-spiTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A32: Linear regression analysis of stream power index (SPI) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -582,7 +763,7 @@ A32: Linear regression analysis of stream power index (SPI) and topographic roug
 <div id="appfig-spiSti" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-spiSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/spi-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-34" title="A33: Linear regression analysis of stream power index (SPI) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/spi-sti.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/spi-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-35" title="A33: Linear regression analysis of stream power index (SPI) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/spi-sti.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-spiSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A33: Linear regression analysis of stream power index (SPI) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -593,7 +774,7 @@ A33: Linear regression analysis of stream power index (SPI) and sediment transpo
 <div id="appfig-twiTri" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-twiTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/twi-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-35" title="A34: Linear regression analysis of topographic wetness index (TWI) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/twi-tri.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/twi-tri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-36" title="A34: Linear regression analysis of topographic wetness index (TWI) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/twi-tri.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-twiTri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A34: Linear regression analysis of topographic wetness index (TWI) and topographic roughness index (TRI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -603,7 +784,7 @@ A34: Linear regression analysis of topographic wetness index (TWI) and topograph
 <div id="appfig-twiSti" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-twiSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/tri-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-36" title="A35: Linear regression analysis of topographic wetness index (TRI) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/tri-sti.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/tri-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-37" title="A35: Linear regression analysis of topographic wetness index (TRI) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/tri-sti.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-twiSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A35: Linear regression analysis of topographic wetness index (TRI) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.
@@ -614,7 +795,7 @@ A35: Linear regression analysis of topographic wetness index (TRI) and sediment 
 <div id="appfig-triSti" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-appfig figure">
 <div aria-describedby="appfig-triSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Collinearity/tri-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-37" title="A36: Linear regression analysis of topographic roughness index (TRI) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/tri-sti.png" class="img-fluid figure-img"></a>
+<a href="images/Collinearity/tri-sti.png" class="lightbox" data-gallery="quarto-lightbox-gallery-38" title="A36: Linear regression analysis of topographic roughness index (TRI) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona."><img src="images/Collinearity/tri-sti.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-appfig" id="appfig-triSti-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 A36: Linear regression analysis of topographic roughness index (TRI) and sediment transport index (STI) for 5,000 randomly sampled points across the full study area, encompassing Arizona.

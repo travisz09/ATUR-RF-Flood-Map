@@ -282,6 +282,8 @@ potential map.
 
 \section{Data \& Methods}\label{sec-data-methods}
 
+\subsection{Topography Data}\label{topography-data}
+
 All explanatory variables for the model were derived from the NASA
 Shuttle Radar Topography Mission (SRTM) 30-m DEM. Slope, aspect,
 curvature, stream power index (SPI), topographic wetness index (TWI),
@@ -318,6 +320,8 @@ where χ\textsubscript{ij} is the elevation at coordinates (i, j) and
 focal neighborhood. The code used to calculate TRI is available on
 \href{https://github.com/travisz09/TopographicRoughnessIndex}{GitHub}.
 
+\subsection{Flooding Data}\label{flooding-data}
+
 Flood data used for training the model was obtained from the Federal
 Emergency Management Administration (FEMA) National Flood Hazards Layer,
 which provides 100-year flood maps for many areas of the US. The data
@@ -329,6 +333,8 @@ resolution. Additionally, the FEMA data was reclassified to a binary
 output, either flooded or not flooded (during a 100-year flood event),
 eliminating details such as survey methods and flow depth.
 
+\subsection{Variable Collinearity}\label{variable-collinearity}
+
 The machine learning model was performed in Google Earth Engine (GEE).
 The SRTM elevation data was access and clipped to the study area
 natively through GEE servers, all other data layers, including the study
@@ -338,17 +344,24 @@ implementation.
 Prior to modeling, the collinearity of the explanatory variables was
 explored using a series of pair-wise linear regression plots shown in
 Figures A\ref{appfig-floodElev}-A\ref{appfig-triSti}. For collinearity
-analysis 5,000 points were randomly sampled across the study area, the
-maximum number of points which can be plotted in GEE. The collinearity
+analysis 5,000 points (the maximum number of points which can be plotted
+in GEE) were randomly sampled across the study area . The collinearity
 of each pair-wise regression is summarized visually in
 Figure~\ref{fig-Rsquared} using the R-squared statistic of each
-comparison.
+comparison. While some relationships, e.g.~slope and TWI, share a
+complex relationship that is not captured by a linear regression, the
+R-squared statistic is a simple indicator of collinearity which is
+readily understood. Although a formal variance inflation factor (VIF)
+analysis was not performed, efforts were made to limit model complexity
+by manually testing variable combinations, especially those that showed
+high degrees of collinearity, and at equivalent model accuracy, simpler
+models were preferred.
 
 \begin{figure}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{images/CorrelationMatrix.png}}
+\pandocbounded{\includegraphics[keepaspectratio]{images/CorrelationMatrix.PNG}}
 
 }
 
@@ -357,6 +370,129 @@ pair-wise linear regression (green = high, red = low), representing the
 collinearity of each variable used for modeling.}
 
 \end{figure}%
+
+\subsection{Initial Model Testing and
+Development}\label{initial-model-testing-and-development}
+
+Many models were iteratively explored using several machine learning
+algorithms, various combinations of explanatory variables, and many
+hyperparameterization values. For all initial model trials the study
+area was reduced to the San Pedro watershed, a well characterized
+watershed with approx. 66\% FEMA flood map coverage (visual estimate). A
+70:30::training:testing data structure was adopted, and while a range of
+sampled points were tested, this ratio was maintained throughout. Model
+performance was primarily assessed through an overall accuracy score,
+with confusion matrix analysis performed for highly accurate models.
+
+Tested models included Classification and Regression Tree (CART, a.k.a
+Decision Tree), Random Forest (RF), and Support Vector Machine (SVM).
+Generally, CART classification produced very noisy results which tended
+to overestimate flood waters, and averaged around 79.5\% accuracy (data
+not shown). SVM classification was too computationally demanding, even
+within the smaller study area of the San Pedro, and with the generous
+cloud computing resources of GEE. As a consequence SVM classification
+can not be evaluated, other than to say that it is inefficient and
+implementation is impractical. RF classification proved to be the most
+promising method of classification, and the most effort was spent on
+developing that model.
+
+\subsubsection{Random Forest Model
+Development}\label{random-forest-model-development}
+
+Over 400 RF models were tested for the San Pedro watershed. Model
+optimization parameters tested included the number of trees, the number
+of sampling points (from 20,000 up to 60,000), and combinations of
+explanatory variables. Many RF models were tested simultaneously with
+between 5 to 100 trees using a custom GEE function modified from Nicolau
+et al. (2023). The referenced accuracy scores for preliminary models
+refers to the most accurate model, using the fewest number of trees.
+Tested RF models ranged from 73.9\% to 87.4\% (Table~\ref{tbl-rfAcc}).
+The most accurate model tested used 35,000 sampling points, consisting
+of 30,000 dry land points (not flooded) and 5,000 flooded points and
+with all explanatory variables except for TRI, achieving an 87.4\%
+overall accuracy.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3023}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3023}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1163}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2791}}@{}}
+\caption{Random Forest algorithm optimization and accuracy. All recorded
+sampling points grouped together before being partitioned into a
+70:30::training:testing structure.}\label{tbl-rfAcc}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Variables
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Sampling Points (dry land, flooded)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Trees
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Accuracy (\%)
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Variables
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Sampling Points (dry land, flooded)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Trees
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Accuracy (\%)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+All & 15000, 5000 & 50 & 79.2 \\
+All & 20000, 5000 & 85 & 82 \\
+All & 20000, 10000 & 85 & 73.9 \\
+All & 25000, 5000 & 50 & 84.8 \\
+All & 30000, 5000 & 45 & 87 \\
+All & 30000, 10000 & 80 & 78.9 \\
+All & 40000, 10000 & 50 & 82.1 \\
+All & 50000, 10000 & & Error \\
+No TRI & 25000, 5000 & 90 & 84.9 \\
+No slope & 25000, 5000 & 70 & 84.8 \\
+No TRI & 30000, 5000 & 70 & 87.4 \\
+No TRI or STI & 30000, 5000 & 40 & 87.2 \\
+No STI & 30000, 5000 & ?? & 87.1 \\
+No elev & 30000, 5000 & 90 & 86.3 \\
+No slope & 30000, 5000 & 80 & 87.2 \\
+No aspec & 30000, 5000 & 60 & 87 \\
+No curve & 30000, 5000 & 40 & 87.1 \\
+No SPI & 30000, 5000 & 70 & 87.1 \\
+No TWI & 30000, 5000 & 40 & 87.1 \\
+\end{longtable}
+
+Confusion matrix analysis for this model showed much higher producers
+accuracy (98.6\%) compared to consumers accuracy (88.1\%;
+Table~\ref{tbl-confusion1}). While these results are still satisfactory,
+they reveal that the model is generally favoring dry land classification
+over flooded. This can easily be explained by the relative abundance of
+dry land pixels vs.~flooded pixels, both in the sampling points and
+within the FEMA training image as a whole. Qualitatively, the model
+appeared to be somewhat overfit to stream channels (high SPI and STI),
+and while many of the larger flood plains were effectively captured,
+many features appeared too narrow. Additionally, the results were
+somewhat noisy, with noticeable speckling in both the dry and flooded
+regions.
+
+\begin{table}
+
+\caption{\label{tbl-confusion1}The confusion for the most accurate
+random forest classifier, including overall, producer's and consumer's
+accuracy.}
+
+\centering{
+
+\includegraphics[width=4.3in,height=1.3in]{images/Confusion1.png}
+
+}
+
+\end{table}%
 
 \section{Conclusion}\label{conclusion}
 
@@ -379,6 +515,14 @@ Mudashiru, R. B., Sabtu, N., Abustan, I., \& Balogun, W. (2021). Flood
 hazard mapping methods: A review. \emph{Journal of Hydrology},
 \emph{603}, 126846. \url{https://doi.org/10.1016/j.jhydrol.2021.126846}
 
+\bibitem[\citeproctext]{ref-EEFA_F2.2}
+Nicolau, A. P., Dyson, K., Saah, D., \& Clinton, N. (2023). Chapter
+F2.2: Accuracy assessment: Quantifying classification quality. In J. A.
+Cardille, N. Clinton, M. A. Crowley, \& D. Saah (Eds.),
+\emph{Cloud-based remote sensing with google earth engine: Fundamentals
+and applications} (1st ed.). Springer Cham.
+\url{https://docs.google.com/document/d/1UCB900oCdJERca-2WUeDlCu52MjPKJxETJ_jJcLM0bM/edit?tab=t.0}
+
 \bibitem[\citeproctext]{ref-Tehrany_Jones_Shabani_2019}
 Tehrany, M. S., Jones, S., \& Shabani, F. (2019). Identifying the
 essential flood conditioning factors for flood prone area mapping using
@@ -388,6 +532,10 @@ machine learning techniques. \emph{CATENA}, \emph{175}, 174--192.
 \end{CSLReferences}
 
 \section{Appendix}\label{appendix}
+
+Code used to render these plots, as well as interactive versions of
+these plots are available on
+\href{https://code.earthengine.google.com/5d33d4d4b06092127e3e3c5233878ef3}{GEE}.
 
 \textbf{Flooding}
 
