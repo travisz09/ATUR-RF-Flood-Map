@@ -85,12 +85,11 @@ variables.</p>
 <body>
 <sec id="background">
   <title>1 Background</title>
-  <p>A critical component of the Arizona Department of Water Resources
-  (ADWR) Tri-University Recharge Project (TURP, a.k.a ATUR) is a state
-  wide assessment of flooding potential. Initial efforts focused on a
-  traditional suitability analysis approach, using the analytical
-  hierarchy process (AHP) for multi-criterion decision making, largely
-  based on the work by Aloui et al.
+  <p>A critical component of the Arizona Tri-University Recharge (ATUR)
+  project is a state wide assessment of flooding potential. Initial
+  efforts focused on a traditional suitability analysis approach, using
+  the analytical hierarchy process (AHP) for multi-criterion decision
+  making, largely based on the work by Aloui et al.
   (<xref alt="2024" rid="ref-Aloui_Zghibi_Mazzoni_Elomri_Al-Ansari_2024" ref-type="bibr">2024</xref>).
   These methods saw initial success, and are continuing to be developed
   and refined. However, it became apparent that there were a number of
@@ -100,7 +99,8 @@ variables.</p>
   to the data layers used, and the weighting schema determined by the
   AHP. As additional data sets became available, and alternate weighting
   schemas were tested we generated multiple versions of mapped flood
-  potential which did not necessarily agree with each other. In the
+  potential which did not necessarily agree with each other
+  (<xref alt="Figure 1" rid="fig-suitComp">Figure 1</xref>). In the
   absence of high quality ground-truthed data it was difficult to
   validate these results and it was not clear to the project team which
   version was the best. This underscores the need for expert involvement
@@ -110,10 +110,23 @@ variables.</p>
   technician with marginal hydrologic knowledge, and it has been
   difficult to foster sustained buy-in from team members on this portion
   of the project.</p>
+  <fig id="fig-suitComp">
+    <caption><p>Figure 1: Side-by-side comparison of two versions of a
+    flooding susceptibility analysis for the San Pedro watershed showing
+    subtle differences as the result of updated layers and weighting
+    schemas. Map A uses 9 input layers, while map B uses 8, removing one
+    data layer, and exchanging another. For full details of method
+    differences see
+    <ext-link ext-link-type="uri" xlink:href="https://travisz09.github.io/SanPedro_Flood-MAR/">San
+    Pedro Flood-MAR</ext-link>, as well as
+    <ext-link ext-link-type="uri" xlink:href="https://arizona.box.com/s/0pn7q3411aatq7mwohlk1t3a3a0edly2">Flood-MAR
+    V2</ext-link> (login required).</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/SanPedro_V1vsV2.png" />
+  </fig>
   <p>Furthermore, it was extremely difficult to develop a single
   generalized model that would be effective across the whole state.
   Because of the wide array of ecological and geologic conditions that
-  are present across the state variables that are important for flood
+  are present across the state, variables that are important for flood
   risk in one region may not apply in other regions. Lastly, even if
   these technical issues could be overcome, there was still gaps in the
   input data layers, resulting in unclassified regions.</p>
@@ -131,10 +144,10 @@ variables.</p>
   appeared to be particularly relevant. Specifically, their use of
   topographic data <bold>only</bold> was particularly intriguing. These
   data sets are fully derived from digital elevation models (DEMs),
-  which are readily available, easily accessible, and have full coverage
-  over the study area. These findings lead to a renewed initiative to
-  apply a machine learning based method towards the objective of a state
-  wide flooding potential map.</p>
+  which are easily accessible, and have full coverage over the study
+  area. These findings lead to a renewed initiative to apply a machine
+  learning based method towards the objective of a state wide flood
+  map.</p>
 </sec>
 <sec id="sec-data-methods">
   <title>2 Data &amp; Methods</title>
@@ -148,7 +161,7 @@ variables.</p>
     using the Surface Parameters tool (Spatial Analyst). SPI, TWI, and
     STI were calculated as per Tehrany et al.
     (<xref alt="2019" rid="ref-Tehrany_Jones_Shabani_2019" ref-type="bibr">2019</xref>)
-    using the Raster Calculator according to Equations
+    using the Raster Calculator tool according to Equations
     <xref alt="1" rid="eq-spi">1</xref>-<xref alt="3" rid="eq-sti">3</xref></p>
     <p><styled-content id="eq-spi"><disp-formula><alternatives>
     <tex-math><![CDATA[
@@ -196,7 +209,13 @@ variables.</p>
     with a 10 m resolution. Additionally, the FEMA data was reclassified
     to a binary output, either flooded or not flooded (during a 100-year
     flood event), eliminating superfluous details such as survey methods
-    and flow depth.</p>
+    and flow depth
+    (<xref alt="Figure 2" rid="fig-fema">Figure 2</xref>).</p>
+    <fig id="fig-fema">
+      <caption><p>Figure 2: Simplified FEMA 100-year flood map for all
+      counties in Arizona.</p></caption>
+      <graphic mimetype="image" mime-subtype="png" xlink:href="images/FEMA2.png" />
+    </fig>
   </sec>
   <sec id="google-earth-engine-preparation">
     <title>2.3 Google Earth Engine Preparation</title>
@@ -209,24 +228,25 @@ variables.</p>
   <sec id="variable-collinearity">
     <title>2.4 Variable Collinearity</title>
     <p>Prior to modeling, the collinearity of the explanatory variables
-    was explored using a series of pair-wise linear regression plots
-    shown in Figures
-    <xref alt="A1" rid="appfig-floodElev">A1</xref>-<xref alt="A36" rid="appfig-triSti">A36</xref>.
-    For collinearity analysis 5,000 points (the maximum number of points
-    which can be plotted in GEE) were randomly sampled across the study
-    area . The collinearity of each pair-wise regression is summarized
-    visually in <xref alt="Figure 1" rid="fig-Rsquared">Figure 1</xref>
-    using the R-squared statistic of each comparison. While some
-    relationships, e.g. slope and TWI, share a complex relationship that
-    is not captured by a linear regression, the R-squared statistic is a
-    simple indicator of collinearity which is readily understood.
-    Although a formal variance inflation factor (VIF) analysis was not
-    performed, efforts were made to limit model complexity by manually
-    testing variable combinations, especially those that showed high
-    degrees of collinearity, and at equivalent model accuracy, simpler
-    models were preferred.</p>
+    was explored using a series of pair-wise linear regressions (Figures
+    <xref alt="A1" rid="appfig-floodElev">A1</xref>-<xref alt="A36" rid="appfig-triSti">A36</xref>).
+    5,000 points (the maximum number of points which can be plotted in
+    GEE) were randomly sampled across the study area for collinearity
+    analysis. The collinearity of each pair-wise regression is
+    summarized visually in
+    <xref alt="Figure 3" rid="fig-Rsquared">Figure 3</xref> using the
+    R-squared statistic of each comparison. While some relationships,
+    e.g. slope and TWI (Figure
+    <xref alt="A19" rid="appfig-slopeTwi">A19</xref>), share a complex
+    relationship that is not captured by a linear regression, the
+    R-squared statistic is a simple indicator of collinearity which is
+    readily understood. Although a formal variance inflation factor
+    (VIF) analysis was not performed, efforts were made to limit model
+    complexity by manually testing variable combinations, especially
+    those that showed high degrees of collinearity, and at equivalent
+    model accuracy, simpler models were preferred.</p>
     <fig id="fig-Rsquared">
-      <caption><p>Figure 1: Color coded R-squared statistic for each
+      <caption><p>Figure 3: Color coded R-squared statistic for each
       pair-wise linear regression (green = high, red = low),
       representing the collinearity of each variable used for
       modeling.</p></caption>
@@ -241,7 +261,7 @@ variables.</p>
     the study area was reduced to the San Pedro watershed, a well
     characterized watershed with approx. 66% FEMA flood map coverage
     (visual estimate). A 70:30::training:testing data structure was
-    adopted, and while a range of sampled points was tested, this ratio
+    adopted, and while a range of sampled points were tested, this ratio
     was maintained throughout. Model performance was primarily assessed
     through an overall accuracy score, with confusion matrix analysis
     performed for highly accurate models.</p>
@@ -427,7 +447,7 @@ variables.</p>
       narrow, especially along smaller tributaries. Additionally, the
       results were quite noisy, with noticeable speckling in both the
       dry and flooded regions
-      (<xref alt="Figure 2" rid="fig-modelCompare">Figure 2</xref>
+      (<xref alt="Figure 4" rid="fig-modelCompare">Figure 4</xref>
       B).</p>
       <fig id="tbl-confusion1">
         <caption><p>Table 2: The confusion matrix for the most accurate
@@ -436,7 +456,7 @@ variables.</p>
         <graphic mimetype="image" mime-subtype="png" xlink:href="images/Confusion1.png" />
       </fig>
       <fig id="fig-modelCompare">
-        <caption><p>Figure 2: Side-by-side comparison of FEMA 100-year
+        <caption><p>Figure 4: Side-by-side comparison of FEMA 100-year
         flood maps (A), raw random forest classification (B),
         post-processed random forest classification (C), and
         classification errors of the post-processed classification (D)
@@ -457,13 +477,13 @@ variables.</p>
       a 90 m radius (7x7 pixel neighborhood). This both removed noise
       within the flooded areas, and widened the flood zone along long,
       thin features, such as tributaries
-      (<xref alt="Figure 2" rid="fig-modelCompare">Figure 2</xref> C).
+      (<xref alt="Figure 4" rid="fig-modelCompare">Figure 4</xref> C).
       This process did increase the overall rate of commission errors
       (incorrectly classifying as flooded), particularly along the banks
       of major floodplains, however the decreased rate of omission
       errors (incorrectly classifying as not flooded) more than made up
       for this fact, and the overall accuracy increased to 90.5%
-      (<xref alt="Figure 2" rid="fig-modelCompare">Figure 2</xref> D;
+      (<xref alt="Figure 4" rid="fig-modelCompare">Figure 4</xref> D;
       <xref alt="Table 3" rid="tbl-confusion2">Table 3</xref>)</p>
       <fig id="tbl-confusion2">
         <caption><p>Table 3: The confusion matrix for the post-processed
@@ -484,7 +504,7 @@ variables.</p>
     (<xref alt="Table 4" rid="tbl-confusion3">Table 4</xref>).
     Unfortunately, while the dilated model was successful and has been
     exported from GEE, the associated accuracy assessment timed out and
-    will have to be completed as a secondary process either withing GEE
+    will have to be completed as a secondary process either within GEE
     or using external software. Final accuracy assessment of the dilated
     model is pending.</p>
     <fig id="tbl-confusion3">
