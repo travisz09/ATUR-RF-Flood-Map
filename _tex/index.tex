@@ -587,12 +587,15 @@ The chosen RF classification, with post-processing was then applied to
 the larger ATUR study area, encompassing AZ. The same number of sample
 points were used and they retained the same structure (i.e.~dry,
 flooded, and training, testing), however the sample locations were
-adjusted to the larger study area. The overall accuracy of the raw model
-output measured 86.9\% (Table~\ref{tbl-confusion3}). Unfortunately,
-while the dilated model was successful and has been exported from GEE,
-the associated accuracy assessment timed out and will have to be
-completed as a secondary process either within GEE or using external
-software. Final accuracy assessment of the dilated model is pending.
+adjusted to the larger study area. The overall accuracy of the full ATUR
+model output measured 88.2\% (Table~\ref{tbl-confusion3}). While this
+overall accuracy was lower than the San Pedro model, and fell somewhat
+short of the hoped for 90\%, it is still testing quite well. The model
+is particularly good at correctly identifying dry areas, with a
+producer's accuracy of 98.2\%, while it is unfortunately
+under-classifying flooded areas (1071 of 1491 flooded test points
+classified as dry). While this remains an area for improvement, it is as
+sufficiently well trained model to justify use in further analysis.
 
 \begin{table}
 
