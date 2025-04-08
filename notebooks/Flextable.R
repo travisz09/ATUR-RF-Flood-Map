@@ -73,9 +73,9 @@ save_as_image(ft2, path = "D:/GIS_Projects/ATUR/Documents/Quarto/ATUR-RF-Flood-M
 
 df3 <- data.frame(
   'Predicted' = c('Dry', 'Flood', "Producer's"),
-  'actual0' = c('8852', '121', '0.987'),
-  "actual1" = c(1249, 242, ""),
-  'accuracy' = c(0.876, "", 0.869),
+  'actual0' = c('8808', '165', '0.982'),
+  "actual1" = c(1071, 420, ""),
+  'accuracy' = c(0.892, "", 0.882),
   'name' = c("Consumer's", '', 'Overall')
 ) 
 
